@@ -1,0 +1,165 @@
+syntax = "proto3";
+
+package inventory.v1;
+
+import "buf/validate/validate.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+option go_package = "github.com/mbakhodurov/homeworks2/week1/shared/pkg/proto/inventory/v1;inventory_v1";
+
+// InventoryService управляет каталогом деталей для космических кораблей
+service InventoryService {
+  // GetPart возвращает деталь по UUID
+  rpc GetPart(GetPartRequest) returns (GetPartResponse) {
+    option (google.api.http) = {get: "/api/v1/inventory/{uuid}"};
+  }
+
+  // DeletePart удаляет деталь по UUID
+  rpc DeletePart(DeletePartRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/v1/inventory/{uuid}"};
+  }
+
+  // ListParts возвращает список деталей с фильтрацией
+  rpc ListParts(ListPartsRequest) returns (ListPartsResponse) {
+    option (google.api.http) = {get: "/api/v1/inventory"};
+  }
+
+  // CreateParts создаёт новую деталь
+  rpc CreateParts(CreatePartsRequest) returns (CreatePartsResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/inventory"
+      body: "*"
+    };
+  }
+
+  // GetAllPart возвращает все детали без фильтрации
+  rpc GetAllPart(GetAllPartRequest) returns (GetAllPartResponse) {
+    option (google.api.http) = {get: "/api/v1/inventories"};
+  }
+}
+
+// PartType тип детали космического корабля
+enum PartType {
+  // PART_TYPE_UNSPECIFIED не указан
+  PART_TYPE_UNSPECIFIED = 0;
+
+  // PART_TYPE_HULL корпус корабля
+  PART_TYPE_HULL = 1;
+
+  // PART_TYPE_ENGINE двигатель
+  PART_TYPE_ENGINE = 2;
+
+  // PART_TYPE_SHIELD защитный щит
+  PART_TYPE_SHIELD = 3;
+
+  // PART_TYPE_WEAPON вооружение
+  PART_TYPE_WEAPON = 4;
+}
+
+// Part деталь космического корабля
+message Part {
+  // uuid уникальный идентификатор детали
+  string uuid = 1;
+
+  // info основная информация о детали
+  PartInfo info = 2;
+
+  // created_at время создания записи
+  google.protobuf.Timestamp created_at = 3;
+
+  // updated_at время последнего обновления записи
+  google.protobuf.Timestamp updated_at = 4;
+
+  // deleted_at время удаления записи (опционально)
+  google.protobuf.Timestamp deleted_at = 5;
+}
+
+// PartInfo основная информация о детали
+message PartInfo {
+  // name название детали
+  string name = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 50
+  }];
+
+  // description описание детали
+  string description = 2;
+
+  // price цена в копейках (5000₽ = 500000)
+  int64 price = 3;
+
+  // part_type тип детали
+  PartType part_type = 4;
+
+  // stock_quantity количество на складе
+  int64 stock_quantity = 5;
+}
+
+// GetPartRequest запрос на получение детали по UUID
+message GetPartRequest {
+  // uuid уникальный идентификатор детали
+  string uuid = 1 [(buf.validate.field).string.uuid = true];
+}
+
+// GetPartResponse ответ на запрос получения детали
+message GetPartResponse {
+  // part деталь космического корабля
+  Part part = 1;
+}
+
+// DeletePartRequest запрос на удаление детали по UUID
+message DeletePartRequest {
+  // uuid уникальный идентификатор детали
+  string uuid = 1 [(buf.validate.field).string.uuid = true];
+}
+
+// GetAllPartRequest запрос на получение всех деталей
+message GetAllPartRequest {}
+
+// GetAllPartResponse ответ со всеми деталями
+message GetAllPartResponse {
+  // part список деталей
+  repeated Part part = 1;
+
+  // total_count общее количество деталей
+  int64 total_count = 2;
+}
+
+// PartsFilter фильтр для поиска деталей
+message PartsFilter {
+  // uuids список UUID для фильтрации
+  repeated string uuids = 1;
+
+  // part_type список типов деталей для фильтрации
+  repeated PartType part_type = 2;
+}
+
+// ListPartsRequest запрос на получение списка деталей с фильтрацией
+message ListPartsRequest {
+  // filter параметры фильтрации
+  PartsFilter filter = 1;
+}
+
+// ListPartsResponse ответ со списком деталей
+message ListPartsResponse {
+  // part список деталей
+  repeated Part part = 1;
+
+  // total_count общее количество деталей
+  int64 total_count = 2;
+}
+
+// CreatePartsRequest запрос на создание новой детали
+message CreatePartsRequest {
+  // info основная информация о детали
+  PartInfo info = 1;
+}
+
+// CreatePartsResponse ответ на создание детали
+message CreatePartsResponse {
+  // uuid уникальный идентификатор созданной детали
+  string uuid = 1;
+}
