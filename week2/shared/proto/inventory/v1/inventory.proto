@@ -12,16 +12,6 @@ option go_package = "github.com/mbakhodurov/homeworks2/week2/shared/pkg/proto/in
 
 // InventoryService управляет каталогом деталей для космических кораблей
 service InventoryService {
-  // GetPart возвращает деталь по UUID
-  rpc GetPart(GetPartRequest) returns (GetPartResponse) {
-    option (google.api.http) = {get: "/api/v1/inventory/{uuid}"};
-  }
-
-  // DeletePart удаляет деталь по UUID
-  rpc DeletePart(DeletePartRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {delete: "/api/v1/inventory/{uuid}"};
-  }
-
   // ListParts возвращает список деталей с фильтрацией
   rpc ListParts(ListPartsRequest) returns (ListPartsResponse) {
     option (google.api.http) = {get: "/api/v1/inventory"};
@@ -34,10 +24,20 @@ service InventoryService {
       body: "*"
     };
   }
+  
+  // GetPart возвращает деталь по UUID
+  rpc GetPart(GetPartRequest) returns (GetPartResponse) {
+    option (google.api.http) = {get: "/api/v1/inventory/{uuid}"};
+  }
 
   // GetAllPart возвращает все детали без фильтрации
   rpc GetAllPart(GetAllPartRequest) returns (GetAllPartResponse) {
     option (google.api.http) = {get: "/api/v1/inventories"};
+  }
+
+  // DeletePart удаляет деталь по UUID
+  rpc DeletePart(DeletePartRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/v1/inventory/{uuid}"};
   }
 }
 
@@ -128,6 +128,12 @@ message GetAllPartResponse {
   int64 total_count = 2;
 }
 
+// ListPartsRequest запрос на получение списка деталей с фильтрацией
+message ListPartsRequest {
+  // filter параметры фильтрации
+  PartsFilter filter = 1;
+}
+
 // PartsFilter фильтр для поиска деталей
 message PartsFilter {
   // uuids список UUID для фильтрации
@@ -135,12 +141,6 @@ message PartsFilter {
 
   // part_type список типов деталей для фильтрации
   repeated PartType part_type = 2;
-}
-
-// ListPartsRequest запрос на получение списка деталей с фильтрацией
-message ListPartsRequest {
-  // filter параметры фильтрации
-  PartsFilter filter = 1;
 }
 
 // ListPartsResponse ответ со списком деталей

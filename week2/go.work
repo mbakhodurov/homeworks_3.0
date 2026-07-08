@@ -2,11 +2,11 @@
 //       во всех go.mod файлах (order, inventory, payment, shared)
 //       и обновить все импорты в коде!
 
-go 1.25.4
+go 1.26.4
 
 use (
-	// ./inventory
-	// ./order
+	./inventory
+	./order
 	./payment
 	./shared
 )

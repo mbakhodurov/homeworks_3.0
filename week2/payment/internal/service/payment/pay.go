@@ -6,26 +6,26 @@ import (
 
 	"github.com/google/uuid"
 	errs "github.com/mbakhodurov/homeworks2/week2/payment/internal/errors"
-	"github.com/mbakhodurov/homeworks2/week2/payment/internal/service/input"
+	"github.com/mbakhodurov/homeworks2/week2/payment/internal/model"
 )
 
-func (s *service) Pay(ctx context.Context, in input.PayInput) (string, error) {
-	if in.OrderUUID == "" {
+func (s *service) Pay(ctx context.Context, orderUUID string, method model.PaymentMethod) (string, error) {
+	if orderUUID == "" {
 		return "", errs.ErrInvalidOrderUUID
 	}
-	if _, err := uuid.Parse(in.OrderUUID); err != nil {
+	if _, err := uuid.Parse(orderUUID); err != nil {
 		return "", errs.ErrInvalidOrderUUID
 	}
-	if !in.PaymentMethod.IsValid() {
+	if !method.IsValid() {
 		return "", errs.ErrInvalidPaymentMethod
 	}
 
 	transactionUUID := uuid.New().String()
 
 	slog.InfoContext(ctx, "оплата выполнена",
-		"order_uuid", in.OrderUUID,
+		"order_uuid", orderUUID,
 		"transaction_uuid", transactionUUID,
-		"payment_method", in.PaymentMethod)
+		"payment_method", method)
 
 	return transactionUUID, nil
 }
