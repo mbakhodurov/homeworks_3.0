@@ -8,6 +8,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/mbakhodurov/homeworks2/week2/shared v0.0.0-00010101000000-000000000000
 	github.com/ogen-go/ogen v1.22.0
+	github.com/samber/lo v1.53.0
 	google.golang.org/grpc v1.82.0
 )
 

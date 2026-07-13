@@ -1,0 +1,379 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "inventory/v1/inventory.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "InventoryService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/inventories": {
+      "get": {
+        "summary": "GetAllPart возвращает все детали без фильтрации",
+        "operationId": "InventoryService_GetAllPart",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetAllPartResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "InventoryService"
+        ]
+      }
+    },
+    "/api/v1/inventory": {
+      "get": {
+        "summary": "ListParts возвращает список деталей с фильтрацией",
+        "operationId": "InventoryService_ListParts",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListPartsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "filter.uuids",
+            "description": "uuids список UUID для фильтрации",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "filter.part_type",
+            "description": "part_type список типов деталей для фильтрации\n\n - PART_TYPE_UNSPECIFIED: PART_TYPE_UNSPECIFIED не указан\n - PART_TYPE_HULL: PART_TYPE_HULL корпус корабля\n - PART_TYPE_ENGINE: PART_TYPE_ENGINE двигатель\n - PART_TYPE_SHIELD: PART_TYPE_SHIELD защитный щит\n - PART_TYPE_WEAPON: PART_TYPE_WEAPON вооружение",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "PART_TYPE_UNSPECIFIED",
+                "PART_TYPE_HULL",
+                "PART_TYPE_ENGINE",
+                "PART_TYPE_SHIELD",
+                "PART_TYPE_WEAPON"
+              ]
+            },
+            "collectionFormat": "multi"
+          }
+        ],
+        "tags": [
+          "InventoryService"
+        ]
+      },
+      "post": {
+        "summary": "CreateParts создаёт новую деталь",
+        "operationId": "InventoryService_CreateParts",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreatePartsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreatePartsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "InventoryService"
+        ]
+      }
+    },
+    "/api/v1/inventory/{uuid}": {
+      "get": {
+        "summary": "GetPart возвращает деталь по UUID",
+        "operationId": "InventoryService_GetPart",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetPartResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "uuid",
+            "description": "uuid уникальный идентификатор детали",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "InventoryService"
+        ]
+      },
+      "delete": {
+        "summary": "DeletePart удаляет деталь по UUID",
+        "operationId": "InventoryService_DeletePart",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "uuid",
+            "description": "uuid уникальный идентификатор детали",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "InventoryService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1CreatePartsRequest": {
+      "type": "object",
+      "properties": {
+        "info": {
+          "$ref": "#/definitions/v1PartInfo",
+          "title": "info основная информация о детали"
+        }
+      },
+      "title": "CreatePartsRequest запрос на создание новой детали"
+    },
+    "v1CreatePartsResponse": {
+      "type": "object",
+      "properties": {
+        "uuid": {
+          "type": "string",
+          "title": "uuid уникальный идентификатор созданной детали"
+        }
+      },
+      "title": "CreatePartsResponse ответ на создание детали"
+    },
+    "v1GetAllPartResponse": {
+      "type": "object",
+      "properties": {
+        "part": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Part"
+          },
+          "title": "part список деталей"
+        },
+        "total_count": {
+          "type": "string",
+          "format": "int64",
+          "title": "total_count общее количество деталей"
+        }
+      },
+      "title": "GetAllPartResponse ответ со всеми деталями"
+    },
+    "v1GetPartResponse": {
+      "type": "object",
+      "properties": {
+        "part": {
+          "$ref": "#/definitions/v1Part",
+          "title": "part деталь космического корабля"
+        }
+      },
+      "title": "GetPartResponse ответ на запрос получения детали"
+    },
+    "v1ListPartsResponse": {
+      "type": "object",
+      "properties": {
+        "part": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Part"
+          },
+          "title": "part список деталей"
+        },
+        "total_count": {
+          "type": "string",
+          "format": "int64",
+          "title": "total_count общее количество деталей"
+        }
+      },
+      "title": "ListPartsResponse ответ со списком деталей"
+    },
+    "v1Part": {
+      "type": "object",
+      "properties": {
+        "uuid": {
+          "type": "string",
+          "title": "uuid уникальный идентификатор детали"
+        },
+        "info": {
+          "$ref": "#/definitions/v1PartInfo",
+          "title": "info основная информация о детали"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "title": "created_at время создания записи"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "title": "updated_at время последнего обновления записи"
+        },
+        "deleted_at": {
+          "type": "string",
+          "format": "date-time",
+          "title": "deleted_at время удаления записи (опционально)"
+        }
+      },
+      "title": "Part деталь космического корабля"
+    },
+    "v1PartInfo": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "name название детали"
+        },
+        "description": {
+          "type": "string",
+          "title": "description описание детали"
+        },
+        "price": {
+          "type": "string",
+          "format": "int64",
+          "title": "price цена в копейках (5000₽ = 500000)"
+        },
+        "part_type": {
+          "$ref": "#/definitions/v1PartType",
+          "title": "part_type тип детали"
+        },
+        "stock_quantity": {
+          "type": "string",
+          "format": "int64",
+          "title": "stock_quantity количество на складе"
+        }
+      },
+      "title": "PartInfo основная информация о детали"
+    },
+    "v1PartType": {
+      "type": "string",
+      "enum": [
+        "PART_TYPE_UNSPECIFIED",
+        "PART_TYPE_HULL",
+        "PART_TYPE_ENGINE",
+        "PART_TYPE_SHIELD",
+        "PART_TYPE_WEAPON"
+      ],
+      "default": "PART_TYPE_UNSPECIFIED",
+      "description": "- PART_TYPE_UNSPECIFIED: PART_TYPE_UNSPECIFIED не указан\n - PART_TYPE_HULL: PART_TYPE_HULL корпус корабля\n - PART_TYPE_ENGINE: PART_TYPE_ENGINE двигатель\n - PART_TYPE_SHIELD: PART_TYPE_SHIELD защитный щит\n - PART_TYPE_WEAPON: PART_TYPE_WEAPON вооружение",
+      "title": "PartType тип детали космического корабля"
+    },
+    "v1PartsFilter": {
+      "type": "object",
+      "properties": {
+        "uuids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "uuids список UUID для фильтрации"
+        },
+        "part_type": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1PartType"
+          },
+          "title": "part_type список типов деталей для фильтрации"
+        }
+      },
+      "title": "PartsFilter фильтр для поиска деталей"
+    }
+  }
+}

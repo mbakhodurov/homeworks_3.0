@@ -1,0 +1,15 @@
+package v1
+
+import payment_v1 "github.com/mbakhodurov/homeworks2/week3/shared/pkg/proto/payment/v1"
+
+type api struct {
+	payment_v1.UnimplementedPaymentServiceServer
+
+	paymentService PaymentService
+}
+
+func New(paymentService PaymentService) *api {
+	return &api{
+		paymentService: paymentService,
+	}
+}
