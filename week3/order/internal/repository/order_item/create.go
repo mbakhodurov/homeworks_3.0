@@ -27,7 +27,7 @@ func (r *repository) Create(ctx context.Context, items []model.OrderItem) error 
 		return fmt.Errorf("build query: %w", err)
 	}
 
-	_, err = r.pool.Exec(ctx, sql, args...)
+	_, err = r.getter.DefaultTrOrDB(ctx, r.pool).Exec(ctx, sql, args...)
 	if err != nil {
 		return fmt.Errorf("insert order items: %w", err)
 	}
