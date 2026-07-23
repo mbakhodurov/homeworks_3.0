@@ -211,7 +211,7 @@ const file_payment_v1_payment_proto_rawDesc = "" +
 	"\x1aPAYMENT_METHOD_CREDIT_CARD\x10\x03\x12!\n" +
 	"\x1dPAYMENT_METHOD_INVESTOR_MONEY\x10\x042}\n" +
 	"\x0ePaymentService\x12k\n" +
-	"\bPayOrder\x12\x1b.payment.v1.PayOrderRequest\x1a\x1c.payment.v1.PayOrderResponse\"$\x82\xd3\xe4\x93\x02\x1e:\x01*\"\x19/api/v1/payment/pay_orderBPZNgithub.com/mbakhodurov/homeworks2/week3/shared/pkg/proto/payment/v1;payment_v1b\x06proto3"
+	"\bPayOrder\x12\x1b.payment.v1.PayOrderRequest\x1a\x1c.payment.v1.PayOrderResponse\"$\x82\xd3\xe4\x93\x02\x1e:\x01*\"\x19/api/v1/payment/pay_orderBPZNgithub.com/mbakhodurov/homeworks2/week4/shared/pkg/proto/payment/v1;payment_v1b\x06proto3"
 
 var (
 	file_payment_v1_payment_proto_rawDescOnce sync.Once
