@@ -87,6 +87,94 @@ message Part {
 
   // deleted_at время удаления записи (опционально)
   google.protobuf.Timestamp deleted_at = 5;
+
+  // properties типоспецифичные свойства детали (опционально, зависит от part_type)
+  PartProperties properties = 6;
+}
+
+// PartProperties типоспецифичные свойства детали. Заполнено ровно одно поле —
+// то, что соответствует part_type родительской Part.
+message PartProperties {
+  // properties типоспецифичные свойства детали
+  oneof properties {
+    // hull свойства корпуса
+    HullProperties hull = 1;
+
+    // engine свойства двигателя
+    EngineProperties engine = 2;
+
+    // shield свойства щита
+    ShieldProperties shield = 3;
+
+    // weapon свойства оружия
+    WeaponProperties weapon = 4;
+  }
+}
+
+// HullProperties свойства корпуса
+message HullProperties {
+  // strength прочность корпуса
+  int64 strength = 1;
+}
+
+// EngineClass класс двигателя
+enum EngineClass {
+  // ENGINE_CLASS_UNSPECIFIED не указан
+  ENGINE_CLASS_UNSPECIFIED = 0;
+
+  // ENGINE_CLASS_A класс A
+  ENGINE_CLASS_A = 1;
+
+  // ENGINE_CLASS_B класс B
+  ENGINE_CLASS_B = 2;
+
+  // ENGINE_CLASS_C класс C
+  ENGINE_CLASS_C = 3;
+}
+
+// EngineProperties свойства двигателя
+message EngineProperties {
+  // class класс двигателя
+  EngineClass class = 1;
+
+  // required_strength минимальная прочность корпуса, необходимая для этого двигателя
+  int64 required_strength = 2;
+}
+
+// ShieldType тип щита
+enum ShieldType {
+  // SHIELD_TYPE_UNSPECIFIED не указан
+  SHIELD_TYPE_UNSPECIFIED = 0;
+
+  // SHIELD_TYPE_ENERGY энергетический щит
+  SHIELD_TYPE_ENERGY = 1;
+
+  // SHIELD_TYPE_PLASMA плазменный щит
+  SHIELD_TYPE_PLASMA = 2;
+}
+
+// ShieldProperties свойства щита
+message ShieldProperties {
+  // shield_type тип щита
+  ShieldType shield_type = 1;
+}
+
+// WeaponType тип оружия
+enum WeaponType {
+  // WEAPON_TYPE_UNSPECIFIED не указан
+  WEAPON_TYPE_UNSPECIFIED = 0;
+
+  // WEAPON_TYPE_LASER лазерное оружие
+  WEAPON_TYPE_LASER = 1;
+
+  // WEAPON_TYPE_MISSILE ракетное оружие
+  WEAPON_TYPE_MISSILE = 2;
+}
+
+// WeaponProperties свойства оружия
+message WeaponProperties {
+  // weapon_type тип оружия
+  WeaponType weapon_type = 1;
 }
 
 // PartInfo основная информация о детали

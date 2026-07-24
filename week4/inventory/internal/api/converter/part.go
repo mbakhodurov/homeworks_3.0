@@ -117,7 +117,82 @@ func PartToDTO(p model.Part) *inventoryv1.Part {
 			PartType:      PartTypeToDTO(p.PartType()),
 			StockQuantity: int64(p.StockQuantity()),
 		},
-		CreatedAt: timestamppb.New(p.CreatedAt()),
+		CreatedAt:  timestamppb.New(p.CreatedAt()),
+		Properties: PartPropertiesToDTO(p.Properties()),
+	}
+}
+
+// PartPropertiesToDTO конвертирует типоспецифичные свойства детали в proto-представление.
+// Возвращает nil, если ни одно из полей не заполнено (деталь создана без properties).
+func PartPropertiesToDTO(props *model.PartProperties) *inventoryv1.PartProperties {
+	switch {
+	case props.Hull() != nil:
+		return &inventoryv1.PartProperties{
+			Properties: &inventoryv1.PartProperties_Hull{
+				Hull: &inventoryv1.HullProperties{Strength: int64(props.Hull().Strength())},
+			},
+		}
+	case props.Engine() != nil:
+		return &inventoryv1.PartProperties{
+			Properties: &inventoryv1.PartProperties_Engine{
+				Engine: &inventoryv1.EngineProperties{
+					Class:            EngineClassToDTO(props.Engine().Class()),
+					RequiredStrength: int64(props.Engine().RequiredStrength()),
+				},
+			},
+		}
+	case props.Shield() != nil:
+		return &inventoryv1.PartProperties{
+			Properties: &inventoryv1.PartProperties_Shield{
+				Shield: &inventoryv1.ShieldProperties{ShieldType: ShieldTypeToDTO(props.Shield().ShieldType())},
+			},
+		}
+	case props.Weapon() != nil:
+		return &inventoryv1.PartProperties{
+			Properties: &inventoryv1.PartProperties_Weapon{
+				Weapon: &inventoryv1.WeaponProperties{WeaponType: WeaponTypeToDTO(props.Weapon().WeaponType())},
+			},
+		}
+	default:
+		return nil
+	}
+}
+
+// EngineClassToDTO конвертирует доменный класс двигателя в proto-представление.
+func EngineClassToDTO(c model.EngineClass) inventoryv1.EngineClass {
+	switch c {
+	case model.EngineClassA:
+		return inventoryv1.EngineClass_ENGINE_CLASS_A
+	case model.EngineClassB:
+		return inventoryv1.EngineClass_ENGINE_CLASS_B
+	case model.EngineClassC:
+		return inventoryv1.EngineClass_ENGINE_CLASS_C
+	default:
+		return inventoryv1.EngineClass_ENGINE_CLASS_UNSPECIFIED
+	}
+}
+
+// ShieldTypeToDTO конвертирует доменный тип щита в proto-представление.
+func ShieldTypeToDTO(t model.ShieldType) inventoryv1.ShieldType {
+	switch t {
+	case model.ShieldTypeEnergy:
+		return inventoryv1.ShieldType_SHIELD_TYPE_ENERGY
+	case model.ShieldTypePlasma:
+		return inventoryv1.ShieldType_SHIELD_TYPE_PLASMA
+	default:
+		return inventoryv1.ShieldType_SHIELD_TYPE_UNSPECIFIED
+	}
+}
+
+// WeaponTypeToDTO конвертирует доменный тип оружия в proto-представление.
+func WeaponTypeToDTO(t model.WeaponType) inventoryv1.WeaponType {
+	switch t {
+	case model.WeaponTypeLaser:
+		return inventoryv1.WeaponType_WEAPON_TYPE_LASER
+	case model.WeaponTypeMissile:
+		return inventoryv1.WeaponType_WEAPON_TYPE_MISSILE
+	default:
+		return inventoryv1.WeaponType_WEAPON_TYPE_UNSPECIFIED
 	}
 }
 

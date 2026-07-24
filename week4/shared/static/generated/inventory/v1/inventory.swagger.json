@@ -237,6 +237,33 @@
       },
       "title": "CreatePartsResponse ответ на создание детали"
     },
+    "v1EngineClass": {
+      "type": "string",
+      "enum": [
+        "ENGINE_CLASS_UNSPECIFIED",
+        "ENGINE_CLASS_A",
+        "ENGINE_CLASS_B",
+        "ENGINE_CLASS_C"
+      ],
+      "default": "ENGINE_CLASS_UNSPECIFIED",
+      "description": "- ENGINE_CLASS_UNSPECIFIED: ENGINE_CLASS_UNSPECIFIED не указан\n - ENGINE_CLASS_A: ENGINE_CLASS_A класс A\n - ENGINE_CLASS_B: ENGINE_CLASS_B класс B\n - ENGINE_CLASS_C: ENGINE_CLASS_C класс C",
+      "title": "EngineClass класс двигателя"
+    },
+    "v1EngineProperties": {
+      "type": "object",
+      "properties": {
+        "class": {
+          "$ref": "#/definitions/v1EngineClass",
+          "title": "class класс двигателя"
+        },
+        "required_strength": {
+          "type": "string",
+          "format": "int64",
+          "title": "required_strength минимальная прочность корпуса, необходимая для этого двигателя"
+        }
+      },
+      "title": "EngineProperties свойства двигателя"
+    },
     "v1GetAllPartResponse": {
       "type": "object",
       "properties": {
@@ -265,6 +292,17 @@
         }
       },
       "title": "GetPartResponse ответ на запрос получения детали"
+    },
+    "v1HullProperties": {
+      "type": "object",
+      "properties": {
+        "strength": {
+          "type": "string",
+          "format": "int64",
+          "title": "strength прочность корпуса"
+        }
+      },
+      "title": "HullProperties свойства корпуса"
     },
     "v1ListPartsResponse": {
       "type": "object",
@@ -310,6 +348,10 @@
           "type": "string",
           "format": "date-time",
           "title": "deleted_at время удаления записи (опционально)"
+        },
+        "properties": {
+          "$ref": "#/definitions/v1PartProperties",
+          "title": "properties типоспецифичные свойства детали (опционально, зависит от part_type)"
         }
       },
       "title": "Part деталь космического корабля"
@@ -341,6 +383,28 @@
         }
       },
       "title": "PartInfo основная информация о детали"
+    },
+    "v1PartProperties": {
+      "type": "object",
+      "properties": {
+        "hull": {
+          "$ref": "#/definitions/v1HullProperties",
+          "title": "hull свойства корпуса"
+        },
+        "engine": {
+          "$ref": "#/definitions/v1EngineProperties",
+          "title": "engine свойства двигателя"
+        },
+        "shield": {
+          "$ref": "#/definitions/v1ShieldProperties",
+          "title": "shield свойства щита"
+        },
+        "weapon": {
+          "$ref": "#/definitions/v1WeaponProperties",
+          "title": "weapon свойства оружия"
+        }
+      },
+      "description": "PartProperties типоспецифичные свойства детали. Заполнено ровно одно поле —\nто, что соответствует part_type родительской Part."
     },
     "v1PartType": {
       "type": "string",
@@ -374,6 +438,48 @@
         }
       },
       "title": "PartsFilter фильтр для поиска деталей"
+    },
+    "v1ShieldProperties": {
+      "type": "object",
+      "properties": {
+        "shield_type": {
+          "$ref": "#/definitions/v1ShieldType",
+          "title": "shield_type тип щита"
+        }
+      },
+      "title": "ShieldProperties свойства щита"
+    },
+    "v1ShieldType": {
+      "type": "string",
+      "enum": [
+        "SHIELD_TYPE_UNSPECIFIED",
+        "SHIELD_TYPE_ENERGY",
+        "SHIELD_TYPE_PLASMA"
+      ],
+      "default": "SHIELD_TYPE_UNSPECIFIED",
+      "description": "- SHIELD_TYPE_UNSPECIFIED: SHIELD_TYPE_UNSPECIFIED не указан\n - SHIELD_TYPE_ENERGY: SHIELD_TYPE_ENERGY энергетический щит\n - SHIELD_TYPE_PLASMA: SHIELD_TYPE_PLASMA плазменный щит",
+      "title": "ShieldType тип щита"
+    },
+    "v1WeaponProperties": {
+      "type": "object",
+      "properties": {
+        "weapon_type": {
+          "$ref": "#/definitions/v1WeaponType",
+          "title": "weapon_type тип оружия"
+        }
+      },
+      "title": "WeaponProperties свойства оружия"
+    },
+    "v1WeaponType": {
+      "type": "string",
+      "enum": [
+        "WEAPON_TYPE_UNSPECIFIED",
+        "WEAPON_TYPE_LASER",
+        "WEAPON_TYPE_MISSILE"
+      ],
+      "default": "WEAPON_TYPE_UNSPECIFIED",
+      "description": "- WEAPON_TYPE_UNSPECIFIED: WEAPON_TYPE_UNSPECIFIED не указан\n - WEAPON_TYPE_LASER: WEAPON_TYPE_LASER лазерное оружие\n - WEAPON_TYPE_MISSILE: WEAPON_TYPE_MISSILE ракетное оружие",
+      "title": "WeaponType тип оружия"
     }
   }
 }
