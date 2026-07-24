@@ -23,6 +23,9 @@ func (s *service) Create(ctx context.Context, order model.Order) (model.Order, e
 	if err != nil {
 		return model.Order{}, fmt.Errorf("получить детали: %w", err)
 	}
+	if len(parts) != len(uuids) {
+		return model.Order{}, errs.ErrPartNotFound
+	}
 
 	items := make([]model.OrderItem, 0, len(parts))
 	for _, part := range parts {
