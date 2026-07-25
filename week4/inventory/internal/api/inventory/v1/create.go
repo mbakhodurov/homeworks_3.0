@@ -3,7 +3,7 @@ package v1
 import (
 	"context"
 
-	"github.com/mbakhodurov/homeworks2/week4/inventory/internal/api/converter"
+	"github.com/mbakhodurov/homeworks2/week4/inventory/internal/converter"
 	inventoryv1 "github.com/mbakhodurov/homeworks2/week4/shared/pkg/proto/inventory/v1"
 )
 

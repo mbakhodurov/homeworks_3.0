@@ -10,9 +10,14 @@ import (
 
 // OrderRepository определяет контракт для работы с хранилищем заказов.
 type OrderRepository interface {
-	Create(ctx context.Context, order model.Order, items []model.OrderItem) error
+	Create(ctx context.Context, order model.Order) error
 	Get(ctx context.Context, orderUUID uuid.UUID) (model.Order, error)
 	Update(ctx context.Context, order model.Order) error
+}
+
+// OrderItemRepository определяет контракт для работы с позициями заказа.
+type OrderItemRepository interface {
+	Create(ctx context.Context, items []model.OrderItem) error
 }
 
 // InventoryClient определяет контракт для работы с InventoryService.

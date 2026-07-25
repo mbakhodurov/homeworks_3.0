@@ -12,6 +12,11 @@ option go_package = "github.com/mbakhodurov/homeworks2/week4/shared/pkg/proto/in
 
 // InventoryService управляет каталогом деталей для космических кораблей
 service InventoryService {
+  // GetPart возвращает деталь по UUID
+  rpc GetPart(GetPartRequest) returns (GetPartResponse) {
+    option (google.api.http) = {get: "/api/v1/inventory/{uuid}"};
+  }
+
   // ListParts возвращает список деталей с фильтрацией
   rpc ListParts(ListPartsRequest) returns (ListPartsResponse) {
     option (google.api.http) = {get: "/api/v1/inventory"};
@@ -23,11 +28,6 @@ service InventoryService {
       post: "/api/v1/inventory"
       body: "*"
     };
-  }
-
-  // GetPart возвращает деталь по UUID
-  rpc GetPart(GetPartRequest) returns (GetPartResponse) {
-    option (google.api.http) = {get: "/api/v1/inventory/{uuid}"};
   }
 
   // GetAllPart возвращает все детали без фильтрации
@@ -87,9 +87,6 @@ message Part {
 
   // deleted_at время удаления записи (опционально)
   google.protobuf.Timestamp deleted_at = 5;
-
-  // properties типоспецифичные свойства детали (опционально, зависит от part_type)
-  PartProperties properties = 6;
 }
 
 // PartProperties типоспецифичные свойства детали. Заполнено ровно одно поле —
@@ -196,6 +193,9 @@ message PartInfo {
 
   // stock_quantity количество на складе
   int64 stock_quantity = 5;
+
+  // properties типоспецифичные свойства детали (опционально, зависит от part_type)
+  PartProperties properties = 6;
 }
 
 // GetPartRequest запрос на получение детали по UUID

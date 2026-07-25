@@ -262,9 +262,7 @@ type Part struct {
 	// updated_at время последнего обновления записи
 	UpdatedAt *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	// deleted_at время удаления записи (опционально)
-	DeletedAt *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=deleted_at,json=deletedAt,proto3" json:"deleted_at,omitempty"`
-	// properties типоспецифичные свойства детали (опционально, зависит от part_type)
-	Properties    *PartProperties `protobuf:"bytes,6,opt,name=properties,proto3" json:"properties,omitempty"`
+	DeletedAt     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=deleted_at,json=deletedAt,proto3" json:"deleted_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -330,13 +328,6 @@ func (x *Part) GetUpdatedAt() *timestamppb.Timestamp {
 func (x *Part) GetDeletedAt() *timestamppb.Timestamp {
 	if x != nil {
 		return x.DeletedAt
-	}
-	return nil
-}
-
-func (x *Part) GetProperties() *PartProperties {
-	if x != nil {
-		return x.Properties
 	}
 	return nil
 }
@@ -669,6 +660,8 @@ type PartInfo struct {
 	PartType PartType `protobuf:"varint,4,opt,name=part_type,json=partType,proto3,enum=inventory.v1.PartType" json:"part_type,omitempty"`
 	// stock_quantity количество на складе
 	StockQuantity int64 `protobuf:"varint,5,opt,name=stock_quantity,json=stockQuantity,proto3" json:"stock_quantity,omitempty"`
+	// properties типоспецифичные свойства детали (опционально, зависит от part_type)
+	Properties    *PartProperties `protobuf:"bytes,6,opt,name=properties,proto3" json:"properties,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -736,6 +729,13 @@ func (x *PartInfo) GetStockQuantity() int64 {
 		return x.StockQuantity
 	}
 	return 0
+}
+
+func (x *PartInfo) GetProperties() *PartProperties {
+	if x != nil {
+		return x.Properties
+	}
+	return nil
 }
 
 // GetPartRequest запрос на получение детали по UUID
@@ -1496,7 +1496,7 @@ var File_inventory_v1_inventory_proto protoreflect.FileDescriptor
 
 const file_inventory_v1_inventory_proto_rawDesc = "" +
 	"\n" +
-	"\x1cinventory/v1/inventory.proto\x12\finventory.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xb5\x02\n" +
+	"\x1cinventory/v1/inventory.proto\x12\finventory.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xf7\x01\n" +
 	"\x04Part\x12\x12\n" +
 	"\x04uuid\x18\x01 \x01(\tR\x04uuid\x12*\n" +
 	"\x04info\x18\x02 \x01(\v2\x16.inventory.v1.PartInfoR\x04info\x129\n" +
@@ -1505,10 +1505,7 @@ const file_inventory_v1_inventory_proto_rawDesc = "" +
 	"\n" +
 	"updated_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x129\n" +
 	"\n" +
-	"deleted_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tdeletedAt\x12<\n" +
-	"\n" +
-	"properties\x18\x06 \x01(\v2\x1c.inventory.v1.PartPropertiesR\n" +
-	"properties\"\x80\x02\n" +
+	"deleted_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tdeletedAt\"\x80\x02\n" +
 	"\x0ePartProperties\x122\n" +
 	"\x04hull\x18\x01 \x01(\v2\x1c.inventory.v1.HullPropertiesH\x00R\x04hull\x128\n" +
 	"\x06engine\x18\x02 \x01(\v2\x1e.inventory.v1.EnginePropertiesH\x00R\x06engine\x128\n" +
@@ -1526,13 +1523,16 @@ const file_inventory_v1_inventory_proto_rawDesc = "" +
 	"shieldType\"M\n" +
 	"\x10WeaponProperties\x129\n" +
 	"\vweapon_type\x18\x01 \x01(\x0e2\x18.inventory.v1.WeaponTypeR\n" +
-	"weaponType\"\xbd\x01\n" +
+	"weaponType\"\xfb\x01\n" +
 	"\bPartInfo\x12\x1d\n" +
 	"\x04name\x18\x01 \x01(\tB\t\xbaH\x06r\x04\x10\x01\x182R\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x14\n" +
 	"\x05price\x18\x03 \x01(\x03R\x05price\x123\n" +
 	"\tpart_type\x18\x04 \x01(\x0e2\x16.inventory.v1.PartTypeR\bpartType\x12%\n" +
-	"\x0estock_quantity\x18\x05 \x01(\x03R\rstockQuantity\".\n" +
+	"\x0estock_quantity\x18\x05 \x01(\x03R\rstockQuantity\x12<\n" +
+	"\n" +
+	"properties\x18\x06 \x01(\v2\x1c.inventory.v1.PartPropertiesR\n" +
+	"properties\".\n" +
 	"\x0eGetPartRequest\x12\x1c\n" +
 	"\x04uuid\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x04uuid\"9\n" +
 	"\x0fGetPartResponse\x12&\n" +
@@ -1593,10 +1593,10 @@ const file_inventory_v1_inventory_proto_rawDesc = "" +
 	"\x17WEAPON_TYPE_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11WEAPON_TYPE_LASER\x10\x01\x12\x17\n" +
 	"\x13WEAPON_TYPE_MISSILE\x10\x022\xce\x06\n" +
-	"\x10InventoryService\x12g\n" +
+	"\x10InventoryService\x12h\n" +
+	"\aGetPart\x12\x1c.inventory.v1.GetPartRequest\x1a\x1d.inventory.v1.GetPartResponse\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/api/v1/inventory/{uuid}\x12g\n" +
 	"\tListParts\x12\x1e.inventory.v1.ListPartsRequest\x1a\x1f.inventory.v1.ListPartsResponse\"\x19\x82\xd3\xe4\x93\x02\x13\x12\x11/api/v1/inventory\x12p\n" +
-	"\vCreateParts\x12 .inventory.v1.CreatePartsRequest\x1a!.inventory.v1.CreatePartsResponse\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/api/v1/inventory\x12h\n" +
-	"\aGetPart\x12\x1c.inventory.v1.GetPartRequest\x1a\x1d.inventory.v1.GetPartResponse\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/api/v1/inventory/{uuid}\x12l\n" +
+	"\vCreateParts\x12 .inventory.v1.CreatePartsRequest\x1a!.inventory.v1.CreatePartsResponse\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/api/v1/inventory\x12l\n" +
 	"\n" +
 	"GetAllPart\x12\x1f.inventory.v1.GetAllPartRequest\x1a .inventory.v1.GetAllPartResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/api/v1/inventories\x12g\n" +
 	"\n" +
@@ -1655,32 +1655,32 @@ var file_inventory_v1_inventory_proto_depIdxs = []int32{
 	27, // 1: inventory.v1.Part.created_at:type_name -> google.protobuf.Timestamp
 	27, // 2: inventory.v1.Part.updated_at:type_name -> google.protobuf.Timestamp
 	27, // 3: inventory.v1.Part.deleted_at:type_name -> google.protobuf.Timestamp
-	5,  // 4: inventory.v1.Part.properties:type_name -> inventory.v1.PartProperties
-	6,  // 5: inventory.v1.PartProperties.hull:type_name -> inventory.v1.HullProperties
-	7,  // 6: inventory.v1.PartProperties.engine:type_name -> inventory.v1.EngineProperties
-	8,  // 7: inventory.v1.PartProperties.shield:type_name -> inventory.v1.ShieldProperties
-	9,  // 8: inventory.v1.PartProperties.weapon:type_name -> inventory.v1.WeaponProperties
-	1,  // 9: inventory.v1.EngineProperties.class:type_name -> inventory.v1.EngineClass
-	2,  // 10: inventory.v1.ShieldProperties.shield_type:type_name -> inventory.v1.ShieldType
-	3,  // 11: inventory.v1.WeaponProperties.weapon_type:type_name -> inventory.v1.WeaponType
-	0,  // 12: inventory.v1.PartInfo.part_type:type_name -> inventory.v1.PartType
+	6,  // 4: inventory.v1.PartProperties.hull:type_name -> inventory.v1.HullProperties
+	7,  // 5: inventory.v1.PartProperties.engine:type_name -> inventory.v1.EngineProperties
+	8,  // 6: inventory.v1.PartProperties.shield:type_name -> inventory.v1.ShieldProperties
+	9,  // 7: inventory.v1.PartProperties.weapon:type_name -> inventory.v1.WeaponProperties
+	1,  // 8: inventory.v1.EngineProperties.class:type_name -> inventory.v1.EngineClass
+	2,  // 9: inventory.v1.ShieldProperties.shield_type:type_name -> inventory.v1.ShieldType
+	3,  // 10: inventory.v1.WeaponProperties.weapon_type:type_name -> inventory.v1.WeaponType
+	0,  // 11: inventory.v1.PartInfo.part_type:type_name -> inventory.v1.PartType
+	5,  // 12: inventory.v1.PartInfo.properties:type_name -> inventory.v1.PartProperties
 	4,  // 13: inventory.v1.GetPartResponse.part:type_name -> inventory.v1.Part
 	4,  // 14: inventory.v1.GetAllPartResponse.part:type_name -> inventory.v1.Part
 	17, // 15: inventory.v1.ListPartsRequest.filter:type_name -> inventory.v1.PartsFilter
 	0,  // 16: inventory.v1.PartsFilter.part_type:type_name -> inventory.v1.PartType
 	4,  // 17: inventory.v1.ListPartsResponse.part:type_name -> inventory.v1.Part
 	10, // 18: inventory.v1.CreatePartsRequest.info:type_name -> inventory.v1.PartInfo
-	16, // 19: inventory.v1.InventoryService.ListParts:input_type -> inventory.v1.ListPartsRequest
-	19, // 20: inventory.v1.InventoryService.CreateParts:input_type -> inventory.v1.CreatePartsRequest
-	11, // 21: inventory.v1.InventoryService.GetPart:input_type -> inventory.v1.GetPartRequest
+	11, // 19: inventory.v1.InventoryService.GetPart:input_type -> inventory.v1.GetPartRequest
+	16, // 20: inventory.v1.InventoryService.ListParts:input_type -> inventory.v1.ListPartsRequest
+	19, // 21: inventory.v1.InventoryService.CreateParts:input_type -> inventory.v1.CreatePartsRequest
 	14, // 22: inventory.v1.InventoryService.GetAllPart:input_type -> inventory.v1.GetAllPartRequest
 	13, // 23: inventory.v1.InventoryService.DeletePart:input_type -> inventory.v1.DeletePartRequest
 	21, // 24: inventory.v1.InventoryService.ValidateCompatibility:input_type -> inventory.v1.ValidateCompatibilityRequest
 	23, // 25: inventory.v1.InventoryService.ReserveParts:input_type -> inventory.v1.ReservePartsRequest
 	25, // 26: inventory.v1.InventoryService.ReleaseParts:input_type -> inventory.v1.ReleasePartsRequest
-	18, // 27: inventory.v1.InventoryService.ListParts:output_type -> inventory.v1.ListPartsResponse
-	20, // 28: inventory.v1.InventoryService.CreateParts:output_type -> inventory.v1.CreatePartsResponse
-	12, // 29: inventory.v1.InventoryService.GetPart:output_type -> inventory.v1.GetPartResponse
+	12, // 27: inventory.v1.InventoryService.GetPart:output_type -> inventory.v1.GetPartResponse
+	18, // 28: inventory.v1.InventoryService.ListParts:output_type -> inventory.v1.ListPartsResponse
+	20, // 29: inventory.v1.InventoryService.CreateParts:output_type -> inventory.v1.CreatePartsResponse
 	15, // 30: inventory.v1.InventoryService.GetAllPart:output_type -> inventory.v1.GetAllPartResponse
 	28, // 31: inventory.v1.InventoryService.DeletePart:output_type -> google.protobuf.Empty
 	22, // 32: inventory.v1.InventoryService.ValidateCompatibility:output_type -> inventory.v1.ValidateCompatibilityResponse

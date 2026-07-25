@@ -95,3 +95,21 @@ func (p *Part) Properties() *PartProperties { return &p.properties }
 
 // CreatedAt возвращает время создания записи.
 func (p *Part) CreatedAt() time.Time { return p.createdAt }
+
+// PartFilter задаёт параметры фильтрации деталей.
+// Если UUIDs непустой — фильтрация по UUID. Иначе — по PartType
+// (или все детали, если PartType == "" / PartTypeUnspecified).
+type PartFilter struct {
+	UUIDs    []string
+	PartType PartType
+}
+
+// CreatePartInput задаёт параметры создания новой детали.
+type CreatePartInput struct {
+	Name          string
+	Description   string
+	PartType      PartType
+	Price         int64
+	StockQuantity int
+	Properties    PartProperties
+}

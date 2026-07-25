@@ -36,3 +36,35 @@ const (
 	OrderStatusPaid           OrderStatus = "PAID"
 	OrderStatusCancelled      OrderStatus = "CANCELLED"
 )
+
+type PaymentMethod string
+
+const (
+	PaymentMethodCard          PaymentMethod = "CARD"
+	PaymentMethodSBP           PaymentMethod = "SBP"
+	PaymentMethodCreditCard    PaymentMethod = "CREDIT_CARD"
+	PaymentMethodInvestorMoney PaymentMethod = "INVESTOR_MONEY"
+)
+
+// CreateOrderInput задаёт параметры создания заказа.
+// Hull и Engine — обязательные слоты, Shield и Weapon — опциональные.
+type CreateOrderInput struct {
+	HullUUID   uuid.UUID
+	EngineUUID uuid.UUID
+	ShieldUUID *uuid.UUID
+	WeaponUUID *uuid.UUID
+}
+
+// PartUUIDs возвращает UUID всех запрошенных компонентов, включая только non-nil опциональные слоты.
+func (in CreateOrderInput) PartUUIDs() []uuid.UUID {
+	uuids := []uuid.UUID{in.HullUUID, in.EngineUUID}
+
+	if in.ShieldUUID != nil {
+		uuids = append(uuids, *in.ShieldUUID)
+	}
+	if in.WeaponUUID != nil {
+		uuids = append(uuids, *in.WeaponUUID)
+	}
+
+	return uuids
+}

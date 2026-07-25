@@ -6,7 +6,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/mbakhodurov/homeworks2/week4/inventory/internal/model"
-	"github.com/mbakhodurov/homeworks2/week4/inventory/internal/service/input"
 )
 
 // TxManager определяет контракт для управления транзакциями.
@@ -16,13 +15,13 @@ type TxManager interface {
 
 // CompatibilityChecker определяет контракт для доменного сервиса проверки совместимости.
 type CompatibilityChecker interface {
-	Check(slots model.ResolvedShipSlots) error
+	Check(parts []model.Part) error
 }
 
 // PartRepository определяет контракт для работы с хранилищем деталей.
 type PartRepository interface {
-	Get(ctx context.Context, partUUID uuid.UUID) (model.Part, error)
-	List(ctx context.Context, filter input.PartFilter) ([]model.Part, error)
+	Get(ctx context.Context, uuid string) (model.Part, error)
+	List(ctx context.Context, filter model.PartFilter) ([]model.Part, error)
 	Create(ctx context.Context, p model.Part) error
 	Delete(ctx context.Context, partUUID uuid.UUID) error
 	UpdateReservedBatch(ctx context.Context, parts []model.Part) error

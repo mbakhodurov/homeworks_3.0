@@ -2,13 +2,12 @@ package converter
 
 import (
 	"github.com/mbakhodurov/homeworks2/week4/order/internal/model"
-	"github.com/mbakhodurov/homeworks2/week4/order/internal/service/input"
 	orderv1 "github.com/mbakhodurov/homeworks2/week4/shared/pkg/openapi/order/v1"
 )
 
 // ToCreateOrderInput конвертирует CreateOrderRequest во входные данные создания заказа.
-func ToCreateOrderInput(req *orderv1.CreateOrderRequest) input.CreateOrderInput {
-	in := input.CreateOrderInput{
+func ToCreateOrderInput(req *orderv1.CreateOrderRequest) model.CreateOrderInput {
+	in := model.CreateOrderInput{
 		HullUUID:   req.GetHullUUID(),
 		EngineUUID: req.GetEngineUUID(),
 	}

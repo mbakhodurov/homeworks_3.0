@@ -4,17 +4,15 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/google/uuid"
-
 	errs "github.com/mbakhodurov/homeworks2/week4/inventory/internal/errors"
-	"github.com/mbakhodurov/homeworks2/week4/inventory/internal/service/input"
+	"github.com/mbakhodurov/homeworks2/week4/inventory/internal/model"
 )
 
 // ReserveParts резервирует детали по списку UUID в транзакции:
 // читает детали → резервирует каждую через Reserve() → сохраняет батчем.
-func (s *service) ReserveParts(ctx context.Context, uuids []uuid.UUID) error {
+func (s *service) ReserveParts(ctx context.Context, uuids []string) error {
 	return s.txManager.Do(ctx, func(ctx context.Context) error {
-		parts, err := s.partRepo.List(ctx, input.PartFilter{UUIDs: uuids})
+		parts, err := s.partRepo.List(ctx, model.PartFilter{UUIDs: uuids})
 		if err != nil {
 			return fmt.Errorf("получить детали: %w", err)
 		}

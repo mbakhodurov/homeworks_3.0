@@ -3,14 +3,14 @@ package v1
 import (
 	"context"
 
-	"github.com/mbakhodurov/homeworks2/week4/inventory/internal/api/converter"
-	"github.com/mbakhodurov/homeworks2/week4/inventory/internal/service/input"
+	"github.com/mbakhodurov/homeworks2/week4/inventory/internal/converter"
+	"github.com/mbakhodurov/homeworks2/week4/inventory/internal/model"
 	inventoryv1 "github.com/mbakhodurov/homeworks2/week4/shared/pkg/proto/inventory/v1"
 )
 
 // GetAllPart возвращает все детали без фильтрации.
 func (a *api) GetAllPart(ctx context.Context, _ *inventoryv1.GetAllPartRequest) (*inventoryv1.GetAllPartResponse, error) {
-	parts, err := a.partService.List(ctx, input.PartFilter{})
+	parts, err := a.partService.List(ctx, model.PartFilter{})
 	if err != nil {
 		return nil, err
 	}

@@ -8,14 +8,10 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/mbakhodurov/homeworks2/week4/inventory/internal/model"
-	"github.com/mbakhodurov/homeworks2/week4/inventory/internal/service/input"
 )
 
 // Create создаёт новую деталь и возвращает её UUID.
-// UUID и CreatedAt — идентичность записи, их назначает сервис, а не вызывающий код.
-// Свойства (properties) новой детали не задаются через этот метод — он покрывает
-// только базовое CRUD-создание; для типоспецифичных properties нужен отдельный конструктор.
-func (s *service) Create(ctx context.Context, in input.CreatePartInput) (uuid.UUID, error) {
+func (s *service) Create(ctx context.Context, in model.CreatePartInput) (uuid.UUID, error) {
 	partUUID := uuid.New()
 
 	newPart := model.RestorePart(
@@ -26,7 +22,7 @@ func (s *service) Create(ctx context.Context, in input.CreatePartInput) (uuid.UU
 		in.Price,
 		in.StockQuantity,
 		0,
-		model.PartProperties{},
+		in.Properties,
 		time.Now(),
 	)
 

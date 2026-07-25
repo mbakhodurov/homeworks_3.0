@@ -8,7 +8,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/mbakhodurov/homeworks2/week4/order/internal/model"
-	"github.com/mbakhodurov/homeworks2/week4/order/internal/service/input"
 )
 
 // Create создаёт новый заказ.
@@ -21,7 +20,7 @@ import (
 //
 // Внешние gRPC-вызовы к InventoryService выполняются ДО транзакции — так дольше,
 // чем длится сама транзакция, не держится открытое соединение к БД.
-func (s *service) Create(ctx context.Context, in input.CreateOrderInput) (model.Order, error) {
+func (s *service) Create(ctx context.Context, in model.CreateOrderInput) (model.Order, error) {
 	uuids := in.PartUUIDs()
 
 	parts, err := s.inventoryClient.ListParts(ctx, uuids)
@@ -63,8 +62,11 @@ func (s *service) Create(ctx context.Context, in input.CreateOrderInput) (model.
 	order.Items = items
 
 	err = s.txManager.Do(ctx, func(txCtx context.Context) error {
-		if err := s.orderRepo.Create(txCtx, order, order.Items); err != nil {
+		if err := s.orderRepo.Create(txCtx, order); err != nil {
 			return fmt.Errorf("создать заказ: %w", err)
+		}
+		if err := s.orderItemRepo.Create(txCtx, items); err != nil {
+			return fmt.Errorf("создать позиции заказа: %w", err)
 		}
 		return nil
 	})

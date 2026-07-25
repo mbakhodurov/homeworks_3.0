@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
 	errs "github.com/mbakhodurov/homeworks2/week4/inventory/internal/errors"
@@ -15,7 +14,7 @@ import (
 )
 
 // Get возвращает деталь по UUID.
-func (r *repository) Get(ctx context.Context, partUUID uuid.UUID) (model.Part, error) {
+func (r *repository) Get(ctx context.Context, partUUID string) (model.Part, error) {
 	query := `SELECT ` + partColumns + ` FROM parts WHERE uuid = $1`
 
 	rows, err := r.getter.DefaultTrOrDB(ctx, r.pool).Query(ctx, query, partUUID)

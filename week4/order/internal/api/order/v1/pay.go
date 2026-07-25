@@ -3,7 +3,7 @@ package v1
 import (
 	"context"
 
-	"github.com/mbakhodurov/homeworks2/week4/order/internal/api/converter"
+	"github.com/mbakhodurov/homeworks2/week4/order/internal/converter"
 	orderv1 "github.com/mbakhodurov/homeworks2/week4/shared/pkg/openapi/order/v1"
 )
 

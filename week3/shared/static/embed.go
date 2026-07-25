@@ -7,5 +7,5 @@ import "embed"
 // - swagger-ui.html - интерфейс Swagger UI
 // - generated/ufo.swagger.json - OpenAPI спецификация (генерируется buf)
 //
-//go:embed swagger-ui.html generated/inventory/v1/inventory.swagger.json generated/payment/v1/payment.swagger.json
+//go:embed swagger-ui.html generated/order.swagger.yaml generated/inventory/v1/inventory.swagger.json generated/payment/v1/payment.swagger.json
 var FS embed.FS

@@ -16,25 +16,35 @@ func NewCompatibilityChecker() *CompatibilityChecker {
 
 // Check проверяет совместимость деталей корабля.
 //
-// Соответствие типа детали слоту (правило 1) проверяется раньше, в application-слое,
-// на этапе разрешения слотов — сюда приходят уже валидированные по типу детали.
-//
-// Правила, проверяемые здесь:
-//  2. Прочность корпуса должна выдерживать нагрузку двигателя (hull.strength >= engine.requiredStrength).
-//  3. Плазменный щит конфликтует с лазерным оружием.
-func (c *CompatibilityChecker) Check(slots model.ResolvedShipSlots) error {
-	hull := slots.Hull.Properties().Hull()
-	engine := slots.Engine.Properties().Engine()
+// Правила:
+//  1. Прочность корпуса должна выдерживать нагрузку двигателя (hull.strength >= engine.requiredStrength).
+//  2. Плазменный щит конфликтует с лазерным оружием.
+func (c *CompatibilityChecker) Check(parts []model.Part) error {
+	var hull, engine, shield, weapon *model.Part
 
-	if !hull.CanSupport(engine) {
+	for i := range parts {
+		switch parts[i].PartType() {
+		case model.PartTypeHull:
+			hull = &parts[i]
+		case model.PartTypeEngine:
+			engine = &parts[i]
+		case model.PartTypeShield:
+			shield = &parts[i]
+		case model.PartTypeWeapon:
+			weapon = &parts[i]
+		}
+	}
+
+	if hull == nil || engine == nil {
+		return errs.ErrPartNotFound
+	}
+
+	if !hull.Properties().Hull().CanSupport(engine.Properties().Engine()) {
 		return errs.ErrIncompatibleParts
 	}
 
-	if slots.Shield != nil && slots.Weapon != nil {
-		shield := slots.Shield.Properties().Shield()
-		weapon := slots.Weapon.Properties().Weapon()
-
-		if shield.ConflictsWith(weapon) {
+	if shield != nil && weapon != nil {
+		if shield.Properties().Shield().ConflictsWith(weapon.Properties().Weapon()) {
 			return errs.ErrIncompatibleParts
 		}
 	}

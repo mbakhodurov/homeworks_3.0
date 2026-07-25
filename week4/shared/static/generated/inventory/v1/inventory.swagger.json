@@ -348,10 +348,6 @@
           "type": "string",
           "format": "date-time",
           "title": "deleted_at время удаления записи (опционально)"
-        },
-        "properties": {
-          "$ref": "#/definitions/v1PartProperties",
-          "title": "properties типоспецифичные свойства детали (опционально, зависит от part_type)"
         }
       },
       "title": "Part деталь космического корабля"
@@ -380,6 +376,10 @@
           "type": "string",
           "format": "int64",
           "title": "stock_quantity количество на складе"
+        },
+        "properties": {
+          "$ref": "#/definitions/v1PartProperties",
+          "title": "properties типоспецифичные свойства детали (опционально, зависит от part_type)"
         }
       },
       "title": "PartInfo основная информация о детали"

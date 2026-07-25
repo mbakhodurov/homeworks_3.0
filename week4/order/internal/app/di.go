@@ -17,6 +17,7 @@ import (
 	paymentclient "github.com/mbakhodurov/homeworks2/week4/order/internal/client/grpc/payment/v1"
 	"github.com/mbakhodurov/homeworks2/week4/order/internal/config"
 	orderrepo "github.com/mbakhodurov/homeworks2/week4/order/internal/repository/order"
+	orderitemrepo "github.com/mbakhodurov/homeworks2/week4/order/internal/repository/order_item"
 	ordersvc "github.com/mbakhodurov/homeworks2/week4/order/internal/service/order"
 	"github.com/mbakhodurov/homeworks2/week4/platform/pkg/closer"
 	orderv1 "github.com/mbakhodurov/homeworks2/week4/shared/pkg/openapi/order/v1"
@@ -34,6 +35,7 @@ type diContainer struct {
 	paymentConn   *grpc.ClientConn
 
 	orderRepo       ordersvc.OrderRepository
+	orderItemRepo   ordersvc.OrderItemRepository
 	inventoryClient ordersvc.InventoryClient
 	paymentClient   ordersvc.PaymentClient
 
@@ -136,6 +138,15 @@ func (d *diContainer) OrderRepository(ctx context.Context) ordersvc.OrderReposit
 	return d.orderRepo
 }
 
+// OrderItemRepository возвращает репозиторий позиций заказа.
+func (d *diContainer) OrderItemRepository(ctx context.Context) ordersvc.OrderItemRepository {
+	if d.orderItemRepo == nil {
+		d.orderItemRepo = orderitemrepo.NewRepository(d.PGPool(ctx))
+	}
+
+	return d.orderItemRepo
+}
+
 // InventoryClient возвращает клиент InventoryService.
 func (d *diContainer) InventoryClient() ordersvc.InventoryClient {
 	if d.inventoryClient == nil {
@@ -159,6 +170,7 @@ func (d *diContainer) OrderService(ctx context.Context) orderapiv1.OrderService 
 	if d.orderService == nil {
 		d.orderService = ordersvc.New(
 			d.OrderRepository(ctx),
+			d.OrderItemRepository(ctx),
 			d.InventoryClient(),
 			d.PaymentClient(),
 			d.TxManager(ctx),
