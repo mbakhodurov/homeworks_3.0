@@ -45,6 +45,25 @@ func PartRecordToModel(rec record.Part) (model.Part, error) {
 	), nil
 }
 
+// PartPropertiesToRecord конвертирует доменные свойства детали в persistence-shape для сохранения в JSONB.
+func PartPropertiesToRecord(props model.PartProperties) record.PartPropertiesRecord {
+	switch {
+	case props.Hull() != nil:
+		return record.PartPropertiesRecord{Hull: &record.HullPropertiesRecord{Strength: props.Hull().Strength()}}
+	case props.Engine() != nil:
+		return record.PartPropertiesRecord{Engine: &record.EnginePropertiesRecord{
+			Class:            string(props.Engine().Class()),
+			RequiredStrength: props.Engine().RequiredStrength(),
+		}}
+	case props.Shield() != nil:
+		return record.PartPropertiesRecord{Shield: &record.ShieldPropertiesRecord{ShieldType: string(props.Shield().ShieldType())}}
+	case props.Weapon() != nil:
+		return record.PartPropertiesRecord{Weapon: &record.WeaponPropertiesRecord{WeaponType: string(props.Weapon().WeaponType())}}
+	default:
+		return record.PartPropertiesRecord{}
+	}
+}
+
 // partPropertiesFromRecord определяет тип свойств по тому, какое поле record non-nil,
 // и создаёт соответствующий Value Object.
 func partPropertiesFromRecord(rec record.PartPropertiesRecord) (model.PartProperties, error) {

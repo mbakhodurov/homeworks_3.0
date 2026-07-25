@@ -28,7 +28,7 @@ func (s *service) ReleaseParts(ctx context.Context, uuids []string) error {
 		}
 
 		if err = s.partRepo.UpdateReservedBatch(ctx, parts); err != nil {
-			return fmt.Errorf("сохран��ть резерв: %w", err)
+			return fmt.Errorf("сохранить резерв: %w", err)
 		}
 
 		return nil
