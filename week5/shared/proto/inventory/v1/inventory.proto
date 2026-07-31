@@ -1,0 +1,301 @@
+syntax = "proto3";
+
+package inventory.v1;
+
+import "buf/validate/validate.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+option go_package = "github.com/mbakhodurov/homeworks2/week5/shared/pkg/proto/inventory/v1;inventory_v1";
+
+// InventoryService управляет каталогом деталей для космических кораблей
+service InventoryService {
+  // GetPart возвращает деталь по UUID
+  rpc GetPart(GetPartRequest) returns (GetPartResponse) {
+    option (google.api.http) = {get: "/api/v1/inventory/{uuid}"};
+  }
+
+  // ListParts возвращает список деталей с фильтрацией
+  rpc ListParts(ListPartsRequest) returns (ListPartsResponse) {
+    option (google.api.http) = {get: "/api/v1/inventory"};
+  }
+
+  // CreateParts создаёт новую деталь
+  rpc CreateParts(CreatePartsRequest) returns (CreatePartsResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/inventory"
+      body: "*"
+    };
+  }
+
+  // GetAllPart возвращает все детали без фильтрации
+  rpc GetAllPart(GetAllPartRequest) returns (GetAllPartResponse) {
+    option (google.api.http) = {get: "/api/v1/inventories"};
+  }
+
+  // DeletePart удаляет деталь по UUID
+  rpc DeletePart(DeletePartRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/v1/inventory/{uuid}"};
+  }
+
+  // ValidateCompatibility проверяет совместимость деталей по слотам корабля.
+  // Вызывается только из OrderService по gRPC — публичного REST-маршрута нет.
+  rpc ValidateCompatibility(ValidateCompatibilityRequest) returns (ValidateCompatibilityResponse);
+
+  // ReserveParts резервирует детали для заказа.
+  // Вызывается только из OrderService по gRPC — публичного REST-маршрута нет.
+  rpc ReserveParts(ReservePartsRequest) returns (ReservePartsResponse);
+
+  // ReleaseParts освобождает ранее зарезервированные детали.
+  // Вызывается только из OrderService по gRPC — публичного REST-маршрута нет.
+  rpc ReleaseParts(ReleasePartsRequest) returns (ReleasePartsResponse);
+}
+
+// PartType тип детали космического корабля
+enum PartType {
+  // PART_TYPE_UNSPECIFIED не указан
+  PART_TYPE_UNSPECIFIED = 0;
+
+  // PART_TYPE_HULL корпус корабля
+  PART_TYPE_HULL = 1;
+
+  // PART_TYPE_ENGINE двигатель
+  PART_TYPE_ENGINE = 2;
+
+  // PART_TYPE_SHIELD защитный щит
+  PART_TYPE_SHIELD = 3;
+
+  // PART_TYPE_WEAPON вооружение
+  PART_TYPE_WEAPON = 4;
+}
+
+// Part деталь космического корабля
+message Part {
+  // uuid уникальный идентификатор детали
+  string uuid = 1;
+
+  // info основная информация о детали
+  PartInfo info = 2;
+
+  // created_at время создания записи
+  google.protobuf.Timestamp created_at = 3;
+
+  // updated_at время последнего обновления записи
+  google.protobuf.Timestamp updated_at = 4;
+
+  // deleted_at время удаления записи (опционально)
+  google.protobuf.Timestamp deleted_at = 5;
+}
+
+// PartProperties типоспецифичные свойства детали. Заполнено ровно одно поле —
+// то, что соответствует part_type родительской Part.
+message PartProperties {
+  // properties типоспецифичные свойства детали
+  oneof properties {
+    // hull свойства корпуса
+    HullProperties hull = 1;
+
+    // engine свойства двигателя
+    EngineProperties engine = 2;
+
+    // shield свойства щита
+    ShieldProperties shield = 3;
+
+    // weapon свойства оружия
+    WeaponProperties weapon = 4;
+  }
+}
+
+// HullProperties свойства корпуса
+message HullProperties {
+  // strength прочность корпуса
+  int64 strength = 1;
+}
+
+// EngineClass класс двигателя
+enum EngineClass {
+  // ENGINE_CLASS_UNSPECIFIED не указан
+  ENGINE_CLASS_UNSPECIFIED = 0;
+
+  // ENGINE_CLASS_A класс A
+  ENGINE_CLASS_A = 1;
+
+  // ENGINE_CLASS_B класс B
+  ENGINE_CLASS_B = 2;
+
+  // ENGINE_CLASS_C класс C
+  ENGINE_CLASS_C = 3;
+}
+
+// EngineProperties свойства двигателя
+message EngineProperties {
+  // class класс двигателя
+  EngineClass class = 1;
+
+  // required_strength минимальная прочность корпуса, необходимая для этого двигателя
+  int64 required_strength = 2;
+}
+
+// ShieldType тип щита
+enum ShieldType {
+  // SHIELD_TYPE_UNSPECIFIED не указан
+  SHIELD_TYPE_UNSPECIFIED = 0;
+
+  // SHIELD_TYPE_ENERGY энергетический щит
+  SHIELD_TYPE_ENERGY = 1;
+
+  // SHIELD_TYPE_PLASMA плазменный щит
+  SHIELD_TYPE_PLASMA = 2;
+}
+
+// ShieldProperties свойства щита
+message ShieldProperties {
+  // shield_type тип щита
+  ShieldType shield_type = 1;
+}
+
+// WeaponType тип оружия
+enum WeaponType {
+  // WEAPON_TYPE_UNSPECIFIED не указан
+  WEAPON_TYPE_UNSPECIFIED = 0;
+
+  // WEAPON_TYPE_LASER лазерное оружие
+  WEAPON_TYPE_LASER = 1;
+
+  // WEAPON_TYPE_MISSILE ракетное оружие
+  WEAPON_TYPE_MISSILE = 2;
+}
+
+// WeaponProperties свойства оружия
+message WeaponProperties {
+  // weapon_type тип оружия
+  WeaponType weapon_type = 1;
+}
+
+// PartInfo основная информация о детали
+message PartInfo {
+  // name название детали
+  string name = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 50
+  }];
+
+  // description описание детали
+  string description = 2;
+
+  // price цена в копейках (5000₽ = 500000)
+  int64 price = 3;
+
+  // part_type тип детали
+  PartType part_type = 4;
+
+  // stock_quantity количество на складе
+  int64 stock_quantity = 5;
+
+  // properties типоспецифичные свойства детали (опционально, зависит от part_type)
+  PartProperties properties = 6;
+}
+
+// GetPartRequest запрос на получение детали по UUID
+message GetPartRequest {
+  // uuid уникальный идентификатор детали
+  string uuid = 1 [(buf.validate.field).string.uuid = true];
+}
+
+// GetPartResponse ответ на запрос получения детали
+message GetPartResponse {
+  // part деталь космического корабля
+  Part part = 1;
+}
+
+// DeletePartRequest запрос на удаление детали по UUID
+message DeletePartRequest {
+  // uuid уникальный идентификатор детали
+  string uuid = 1 [(buf.validate.field).string.uuid = true];
+}
+
+// GetAllPartRequest запрос на получение всех деталей
+message GetAllPartRequest {}
+
+// GetAllPartResponse ответ со всеми деталями
+message GetAllPartResponse {
+  // part список деталей
+  repeated Part part = 1;
+
+  // total_count общее количество деталей
+  int64 total_count = 2;
+}
+
+// ListPartsRequest запрос на получение списка деталей с фильтрацией
+message ListPartsRequest {
+  // filter параметры фильтрации
+  PartsFilter filter = 1;
+}
+
+// PartsFilter фильтр для поиска деталей
+message PartsFilter {
+  // uuids список UUID для фильтрации
+  repeated string uuids = 1;
+
+  // part_type список типов деталей для фильтрации
+  repeated PartType part_type = 2;
+}
+
+// ListPartsResponse ответ со списком деталей
+message ListPartsResponse {
+  // part список деталей
+  repeated Part part = 1;
+
+  // total_count общее количество деталей
+  int64 total_count = 2;
+}
+
+// CreatePartsRequest запрос на создание новой детали
+message CreatePartsRequest {
+  // info основная информация о детали
+  PartInfo info = 1;
+}
+
+// CreatePartsResponse ответ на создание детали
+message CreatePartsResponse {
+  // uuid уникальный идентификатор созданной детали
+  string uuid = 1;
+}
+
+// ValidateCompatibilityRequest запрос на проверку совместимости деталей по слотам корабля
+message ValidateCompatibilityRequest {
+  // hull_uuid uuid детали в слоте корпуса (обязательный слот)
+  string hull_uuid = 1;
+
+  // engine_uuid uuid детали в слоте двигателя (обязательный слот)
+  string engine_uuid = 2;
+
+  // shield_uuid uuid детали в слоте щита (опциональный слот, пустая строка — слот не используется)
+  string shield_uuid = 3;
+
+  // weapon_uuid uuid детали в слоте оружия (опциональный слот, пустая строка — слот не используется)
+  string weapon_uuid = 4;
+}
+
+// ValidateCompatibilityResponse ответ на проверку совместимости (пустой — значит совместимы)
+message ValidateCompatibilityResponse {}
+
+// ReservePartsRequest запрос на резервирование деталей
+message ReservePartsRequest {
+  // uuids список uuid деталей для резервирования
+  repeated string uuids = 1;
+}
+
+// ReservePartsResponse ответ на резервирование (пустой — значит успешно)
+message ReservePartsResponse {}
+
+// ReleasePartsRequest запрос на освобождение ранее зарезервированных деталей
+message ReleasePartsRequest {
+  // uuids список uuid деталей для освобождения
+  repeated string uuids = 1;
+}
+
+// ReleasePartsResponse ответ на освобождение (пустой — значит успешно)
+message ReleasePartsResponse {}
