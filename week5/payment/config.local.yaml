@@ -1,5 +1,8 @@
 grpc:
   host: "localhost"
   port: "50052"
+http:
+  host: ""
+  port: "8082"
 logger:
   level: "info"

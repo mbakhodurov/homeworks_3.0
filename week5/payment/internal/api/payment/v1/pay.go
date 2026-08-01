@@ -8,7 +8,6 @@ import (
 	payment_v1 "github.com/mbakhodurov/homeworks2/week5/shared/pkg/proto/payment/v1"
 )
 
-// PayOrder обрабатывает gRPC-запрос на оплату заказа.
 func (a *api) PayOrder(ctx context.Context, req *payment_v1.PayOrderRequest) (*payment_v1.PayOrderResponse, error) {
 	method := converter.PaymentMethodToModel(req.GetPaymentMethod())
 

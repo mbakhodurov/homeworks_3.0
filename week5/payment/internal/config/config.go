@@ -15,6 +15,7 @@ var appConfig *Config
 // Config — корневой конфиг PaymentService.
 type Config struct {
 	GRPC   GRPCConfig   `yaml:"grpc"`
+	HTTP   HTTPConfig   `yaml:"http"`
 	Logger LoggerConfig `yaml:"logger"`
 }
 

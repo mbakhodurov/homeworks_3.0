@@ -28,6 +28,7 @@ const (
 	InventoryService_ValidateCompatibility_FullMethodName = "/inventory.v1.InventoryService/ValidateCompatibility"
 	InventoryService_ReserveParts_FullMethodName          = "/inventory.v1.InventoryService/ReserveParts"
 	InventoryService_ReleaseParts_FullMethodName          = "/inventory.v1.InventoryService/ReleaseParts"
+	InventoryService_CommitParts_FullMethodName           = "/inventory.v1.InventoryService/CommitParts"
 )
 
 // InventoryServiceClient is the client API for InventoryService service.
@@ -55,6 +56,9 @@ type InventoryServiceClient interface {
 	// ReleaseParts освобождает ранее зарезервированные детали.
 	// Вызывается только из OrderService по gRPC — публичного REST-маршрута нет.
 	ReleaseParts(ctx context.Context, in *ReleasePartsRequest, opts ...grpc.CallOption) (*ReleasePartsResponse, error)
+	// CommitParts списывает зарезервированные детали со склада после сборки корабля.
+	// Вызывается только из OrderService по gRPC — публичного REST-маршрута нет.
+	CommitParts(ctx context.Context, in *CommitPartsRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type inventoryServiceClient struct {
@@ -145,6 +149,16 @@ func (c *inventoryServiceClient) ReleaseParts(ctx context.Context, in *ReleasePa
 	return out, nil
 }
 
+func (c *inventoryServiceClient) CommitParts(ctx context.Context, in *CommitPartsRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, InventoryService_CommitParts_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // InventoryServiceServer is the server API for InventoryService service.
 // All implementations must embed UnimplementedInventoryServiceServer
 // for forward compatibility.
@@ -170,6 +184,9 @@ type InventoryServiceServer interface {
 	// ReleaseParts освобождает ранее зарезервированные детали.
 	// Вызывается только из OrderService по gRPC — публичного REST-маршрута нет.
 	ReleaseParts(context.Context, *ReleasePartsRequest) (*ReleasePartsResponse, error)
+	// CommitParts списывает зарезервированные детали со склада после сборки корабля.
+	// Вызывается только из OrderService по gRPC — публичного REST-маршрута нет.
+	CommitParts(context.Context, *CommitPartsRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedInventoryServiceServer()
 }
 
@@ -203,6 +220,9 @@ func (UnimplementedInventoryServiceServer) ReserveParts(context.Context, *Reserv
 }
 func (UnimplementedInventoryServiceServer) ReleaseParts(context.Context, *ReleasePartsRequest) (*ReleasePartsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ReleaseParts not implemented")
+}
+func (UnimplementedInventoryServiceServer) CommitParts(context.Context, *CommitPartsRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method CommitParts not implemented")
 }
 func (UnimplementedInventoryServiceServer) mustEmbedUnimplementedInventoryServiceServer() {}
 func (UnimplementedInventoryServiceServer) testEmbeddedByValue()                          {}
@@ -369,6 +389,24 @@ func _InventoryService_ReleaseParts_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _InventoryService_CommitParts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CommitPartsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InventoryServiceServer).CommitParts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: InventoryService_CommitParts_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InventoryServiceServer).CommitParts(ctx, req.(*CommitPartsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // InventoryService_ServiceDesc is the grpc.ServiceDesc for InventoryService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -407,6 +445,10 @@ var InventoryService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ReleaseParts",
 			Handler:    _InventoryService_ReleaseParts_Handler,
+		},
+		{
+			MethodName: "CommitParts",
+			Handler:    _InventoryService_CommitParts_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

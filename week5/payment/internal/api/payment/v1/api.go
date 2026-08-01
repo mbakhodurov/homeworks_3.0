@@ -7,7 +7,6 @@ type api struct {
 	paymentService PaymentService
 }
 
-// New создаёт gRPC-обработчик PaymentService.
 func New(paymentService PaymentService) *api {
 	return &api{
 		paymentService: paymentService,

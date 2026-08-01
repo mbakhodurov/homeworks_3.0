@@ -51,6 +51,10 @@ service InventoryService {
   // ReleaseParts освобождает ранее зарезервированные детали.
   // Вызывается только из OrderService по gRPC — публичного REST-маршрута нет.
   rpc ReleaseParts(ReleasePartsRequest) returns (ReleasePartsResponse);
+
+  // CommitParts списывает зарезервированные детали со склада после сборки корабля.
+  // Вызывается только из OrderService по gRPC — публичного REST-маршрута нет.
+  rpc CommitParts(CommitPartsRequest) returns (google.protobuf.Empty);
 }
 
 // PartType тип детали космического корабля
@@ -299,3 +303,9 @@ message ReleasePartsRequest {
 
 // ReleasePartsResponse ответ на освобождение (пустой — значит успешно)
 message ReleasePartsResponse {}
+
+// CommitPartsRequest запрос на списание зарезервированных деталей со склада
+message CommitPartsRequest {
+  // uuids список uuid деталей для списания
+  repeated string uuids = 1;
+}

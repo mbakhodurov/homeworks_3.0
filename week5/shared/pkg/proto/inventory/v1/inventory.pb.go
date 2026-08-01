@@ -1492,6 +1492,52 @@ func (*ReleasePartsResponse) Descriptor() ([]byte, []int) {
 	return file_inventory_v1_inventory_proto_rawDescGZIP(), []int{22}
 }
 
+// CommitPartsRequest запрос на списание зарезервированных деталей со склада
+type CommitPartsRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// uuids список uuid деталей для списания
+	Uuids         []string `protobuf:"bytes,1,rep,name=uuids,proto3" json:"uuids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CommitPartsRequest) Reset() {
+	*x = CommitPartsRequest{}
+	mi := &file_inventory_v1_inventory_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CommitPartsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CommitPartsRequest) ProtoMessage() {}
+
+func (x *CommitPartsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_inventory_v1_inventory_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CommitPartsRequest.ProtoReflect.Descriptor instead.
+func (*CommitPartsRequest) Descriptor() ([]byte, []int) {
+	return file_inventory_v1_inventory_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *CommitPartsRequest) GetUuids() []string {
+	if x != nil {
+		return x.Uuids
+	}
+	return nil
+}
+
 var File_inventory_v1_inventory_proto protoreflect.FileDescriptor
 
 const file_inventory_v1_inventory_proto_rawDesc = "" +
@@ -1571,7 +1617,9 @@ const file_inventory_v1_inventory_proto_rawDesc = "" +
 	"\x14ReservePartsResponse\"+\n" +
 	"\x13ReleasePartsRequest\x12\x14\n" +
 	"\x05uuids\x18\x01 \x03(\tR\x05uuids\"\x16\n" +
-	"\x14ReleasePartsResponse*{\n" +
+	"\x14ReleasePartsResponse\"*\n" +
+	"\x12CommitPartsRequest\x12\x14\n" +
+	"\x05uuids\x18\x01 \x03(\tR\x05uuids*{\n" +
 	"\bPartType\x12\x19\n" +
 	"\x15PART_TYPE_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0ePART_TYPE_HULL\x10\x01\x12\x14\n" +
@@ -1592,7 +1640,7 @@ const file_inventory_v1_inventory_proto_rawDesc = "" +
 	"WeaponType\x12\x1b\n" +
 	"\x17WEAPON_TYPE_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11WEAPON_TYPE_LASER\x10\x01\x12\x17\n" +
-	"\x13WEAPON_TYPE_MISSILE\x10\x022\xce\x06\n" +
+	"\x13WEAPON_TYPE_MISSILE\x10\x022\x97\a\n" +
 	"\x10InventoryService\x12h\n" +
 	"\aGetPart\x12\x1c.inventory.v1.GetPartRequest\x1a\x1d.inventory.v1.GetPartResponse\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/api/v1/inventory/{uuid}\x12g\n" +
 	"\tListParts\x12\x1e.inventory.v1.ListPartsRequest\x1a\x1f.inventory.v1.ListPartsResponse\"\x19\x82\xd3\xe4\x93\x02\x13\x12\x11/api/v1/inventory\x12p\n" +
@@ -1603,7 +1651,8 @@ const file_inventory_v1_inventory_proto_rawDesc = "" +
 	"DeletePart\x12\x1f.inventory.v1.DeletePartRequest\x1a\x16.google.protobuf.Empty\" \x82\xd3\xe4\x93\x02\x1a*\x18/api/v1/inventory/{uuid}\x12p\n" +
 	"\x15ValidateCompatibility\x12*.inventory.v1.ValidateCompatibilityRequest\x1a+.inventory.v1.ValidateCompatibilityResponse\x12U\n" +
 	"\fReserveParts\x12!.inventory.v1.ReservePartsRequest\x1a\".inventory.v1.ReservePartsResponse\x12U\n" +
-	"\fReleaseParts\x12!.inventory.v1.ReleasePartsRequest\x1a\".inventory.v1.ReleasePartsResponseBTZRgithub.com/mbakhodurov/homeworks2/week5/shared/pkg/proto/inventory/v1;inventory_v1b\x06proto3"
+	"\fReleaseParts\x12!.inventory.v1.ReleasePartsRequest\x1a\".inventory.v1.ReleasePartsResponse\x12G\n" +
+	"\vCommitParts\x12 .inventory.v1.CommitPartsRequest\x1a\x16.google.protobuf.EmptyBTZRgithub.com/mbakhodurov/homeworks2/week5/shared/pkg/proto/inventory/v1;inventory_v1b\x06proto3"
 
 var (
 	file_inventory_v1_inventory_proto_rawDescOnce sync.Once
@@ -1618,7 +1667,7 @@ func file_inventory_v1_inventory_proto_rawDescGZIP() []byte {
 }
 
 var file_inventory_v1_inventory_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_inventory_v1_inventory_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
+var file_inventory_v1_inventory_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
 var file_inventory_v1_inventory_proto_goTypes = []any{
 	(PartType)(0),                         // 0: inventory.v1.PartType
 	(EngineClass)(0),                      // 1: inventory.v1.EngineClass
@@ -1647,14 +1696,15 @@ var file_inventory_v1_inventory_proto_goTypes = []any{
 	(*ReservePartsResponse)(nil),          // 24: inventory.v1.ReservePartsResponse
 	(*ReleasePartsRequest)(nil),           // 25: inventory.v1.ReleasePartsRequest
 	(*ReleasePartsResponse)(nil),          // 26: inventory.v1.ReleasePartsResponse
-	(*timestamppb.Timestamp)(nil),         // 27: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),                 // 28: google.protobuf.Empty
+	(*CommitPartsRequest)(nil),            // 27: inventory.v1.CommitPartsRequest
+	(*timestamppb.Timestamp)(nil),         // 28: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),                 // 29: google.protobuf.Empty
 }
 var file_inventory_v1_inventory_proto_depIdxs = []int32{
 	10, // 0: inventory.v1.Part.info:type_name -> inventory.v1.PartInfo
-	27, // 1: inventory.v1.Part.created_at:type_name -> google.protobuf.Timestamp
-	27, // 2: inventory.v1.Part.updated_at:type_name -> google.protobuf.Timestamp
-	27, // 3: inventory.v1.Part.deleted_at:type_name -> google.protobuf.Timestamp
+	28, // 1: inventory.v1.Part.created_at:type_name -> google.protobuf.Timestamp
+	28, // 2: inventory.v1.Part.updated_at:type_name -> google.protobuf.Timestamp
+	28, // 3: inventory.v1.Part.deleted_at:type_name -> google.protobuf.Timestamp
 	6,  // 4: inventory.v1.PartProperties.hull:type_name -> inventory.v1.HullProperties
 	7,  // 5: inventory.v1.PartProperties.engine:type_name -> inventory.v1.EngineProperties
 	8,  // 6: inventory.v1.PartProperties.shield:type_name -> inventory.v1.ShieldProperties
@@ -1678,16 +1728,18 @@ var file_inventory_v1_inventory_proto_depIdxs = []int32{
 	21, // 24: inventory.v1.InventoryService.ValidateCompatibility:input_type -> inventory.v1.ValidateCompatibilityRequest
 	23, // 25: inventory.v1.InventoryService.ReserveParts:input_type -> inventory.v1.ReservePartsRequest
 	25, // 26: inventory.v1.InventoryService.ReleaseParts:input_type -> inventory.v1.ReleasePartsRequest
-	12, // 27: inventory.v1.InventoryService.GetPart:output_type -> inventory.v1.GetPartResponse
-	18, // 28: inventory.v1.InventoryService.ListParts:output_type -> inventory.v1.ListPartsResponse
-	20, // 29: inventory.v1.InventoryService.CreateParts:output_type -> inventory.v1.CreatePartsResponse
-	15, // 30: inventory.v1.InventoryService.GetAllPart:output_type -> inventory.v1.GetAllPartResponse
-	28, // 31: inventory.v1.InventoryService.DeletePart:output_type -> google.protobuf.Empty
-	22, // 32: inventory.v1.InventoryService.ValidateCompatibility:output_type -> inventory.v1.ValidateCompatibilityResponse
-	24, // 33: inventory.v1.InventoryService.ReserveParts:output_type -> inventory.v1.ReservePartsResponse
-	26, // 34: inventory.v1.InventoryService.ReleaseParts:output_type -> inventory.v1.ReleasePartsResponse
-	27, // [27:35] is the sub-list for method output_type
-	19, // [19:27] is the sub-list for method input_type
+	27, // 27: inventory.v1.InventoryService.CommitParts:input_type -> inventory.v1.CommitPartsRequest
+	12, // 28: inventory.v1.InventoryService.GetPart:output_type -> inventory.v1.GetPartResponse
+	18, // 29: inventory.v1.InventoryService.ListParts:output_type -> inventory.v1.ListPartsResponse
+	20, // 30: inventory.v1.InventoryService.CreateParts:output_type -> inventory.v1.CreatePartsResponse
+	15, // 31: inventory.v1.InventoryService.GetAllPart:output_type -> inventory.v1.GetAllPartResponse
+	29, // 32: inventory.v1.InventoryService.DeletePart:output_type -> google.protobuf.Empty
+	22, // 33: inventory.v1.InventoryService.ValidateCompatibility:output_type -> inventory.v1.ValidateCompatibilityResponse
+	24, // 34: inventory.v1.InventoryService.ReserveParts:output_type -> inventory.v1.ReservePartsResponse
+	26, // 35: inventory.v1.InventoryService.ReleaseParts:output_type -> inventory.v1.ReleasePartsResponse
+	29, // 36: inventory.v1.InventoryService.CommitParts:output_type -> google.protobuf.Empty
+	28, // [28:37] is the sub-list for method output_type
+	19, // [19:28] is the sub-list for method input_type
 	19, // [19:19] is the sub-list for extension type_name
 	19, // [19:19] is the sub-list for extension extendee
 	0,  // [0:19] is the sub-list for field type_name
@@ -1710,7 +1762,7 @@ func file_inventory_v1_inventory_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_inventory_v1_inventory_proto_rawDesc), len(file_inventory_v1_inventory_proto_rawDesc)),
 			NumEnums:      4,
-			NumMessages:   23,
+			NumMessages:   24,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

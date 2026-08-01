@@ -33,5 +33,6 @@ plugins:
 inputs:
   - directory: .
     paths:
+      - events
       - inventory
       - payment

@@ -1,6 +1,5 @@
 package model
 
-// PaymentMethod — способ оплаты заказа.
 type PaymentMethod string
 
 const (
@@ -11,7 +10,6 @@ const (
 	PaymentMethodInvestorMoney PaymentMethod = "INVESTOR_MONEY"
 )
 
-// IsValid сообщает, является ли способ оплаты допустимым (не UNSPECIFIED).
 func (m PaymentMethod) IsValid() bool {
 	switch m {
 	case PaymentMethodCard, PaymentMethodSBP,

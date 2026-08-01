@@ -5,7 +5,6 @@ import (
 	payment_v1 "github.com/mbakhodurov/homeworks2/week5/shared/pkg/proto/payment/v1"
 )
 
-// PaymentMethodToModel конвертирует protobuf-enum способа оплаты в доменную модель.
 func PaymentMethodToModel(method payment_v1.PaymentMethod) model.PaymentMethod {
 	switch method {
 	case payment_v1.PaymentMethod_PAYMENT_METHOD_CARD:

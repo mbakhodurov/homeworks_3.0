@@ -10,7 +10,6 @@ import (
 	"github.com/mbakhodurov/homeworks2/week5/payment/internal/service/input"
 )
 
-// Pay обрабатывает оплату заказа и возвращает UUID транзакции.
 func (s *service) Pay(ctx context.Context, in input.PayInput) (string, error) {
 	if in.OrderUUID == "" {
 		return "", errs.ErrInvalidOrderUUID

@@ -150,6 +150,7 @@ components:
         - PENDING_PAYMENT
         - PAID
         - CANCELLED
+        - ASSEMBLED
       description: Статус заказа
       example: PENDING_PAYMENT
     order_dto:
@@ -161,7 +162,13 @@ components:
         - total_price
         - status
         - created_at
+        - user_uuid
       properties:
+        user_uuid:
+          type: string
+          format: uuid
+          description: UUID пользователя (v4)
+          example: 550e8400-e29b-41d4-a716-446655440099
         order_uuid:
           type: string
           format: uuid
@@ -245,7 +252,13 @@ components:
       required:
         - hull_uuid
         - engine_uuid
+        - user_uuid
       properties:
+        user_uuid:
+          type: string
+          format: uuid
+          description: UUID пользователя (обязательный, v4)
+          example: 550e8400-e29b-41d4-a716-446655440099
         hull_uuid:
           type: string
           format: uuid
