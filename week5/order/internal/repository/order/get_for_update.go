@@ -18,7 +18,7 @@ import (
 // Используется в сценариях, где параллельные запросы должны ждать завершения транзакции.
 func (r *repository) GetForUpdate(ctx context.Context, orderUUID uuid.UUID) (model.Order, error) {
 	const orderQuery = `
-        SELECT uuid, total_price, status, transaction_uuid, payment_method, user_uuid, created_at, updated_at
+        SELECT uuid, total_price, status, transaction_uuid, payment_method, created_at, updated_at
         FROM orders
         WHERE uuid = $1
         FOR UPDATE`

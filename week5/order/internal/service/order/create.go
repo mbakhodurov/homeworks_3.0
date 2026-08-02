@@ -45,7 +45,6 @@ func (s *service) Create(ctx context.Context, in model.CreateOrderInput) (model.
 
 	order := model.Order{
 		UUID:      uuid.New(),
-		UserUUID:  in.UserUUID,
 		Status:    model.OrderStatusPendingPayment,
 		CreatedAt: time.Now(),
 	}

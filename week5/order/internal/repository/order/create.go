@@ -14,10 +14,10 @@ func (r *repository) Create(ctx context.Context, order model.Order) error {
 	rec := converter.OrderToRecord(order)
 
 	const q = `
-		INSERT INTO orders (uuid, total_price, status, user_uuid, created_at)
-		VALUES ($1, $2, $3, $4, $5)`
+		INSERT INTO orders (uuid, total_price, status, created_at)
+		VALUES ($1, $2, $3, $4)`
 
-	_, err := r.getter.DefaultTrOrDB(ctx, r.pool).Exec(ctx, q, rec.UUID, rec.TotalPrice, rec.Status, rec.UserUUID, rec.CreatedAt)
+	_, err := r.getter.DefaultTrOrDB(ctx, r.pool).Exec(ctx, q, rec.UUID, rec.TotalPrice, rec.Status, rec.CreatedAt)
 	if err != nil {
 		return fmt.Errorf("создать заказ: %w", err)
 	}

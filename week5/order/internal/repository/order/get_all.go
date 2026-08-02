@@ -14,7 +14,7 @@ import (
 // GetAll возвращает все заказы вместе с позициями.
 func (r *repository) GetAll(ctx context.Context) ([]model.Order, error) {
 	const ordersQuery = `
-		SELECT uuid, total_price, status, transaction_uuid, payment_method, user_uuid, created_at, updated_at
+		SELECT uuid, total_price, status, transaction_uuid, payment_method, created_at, updated_at
 		FROM orders`
 
 	orderRows, err := r.getter.DefaultTrOrDB(ctx, r.pool).Query(ctx, ordersQuery)

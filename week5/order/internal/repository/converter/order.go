@@ -13,7 +13,6 @@ func OrderToRecord(o model.Order) record.Order {
 		UUID:       o.UUID.String(),
 		TotalPrice: o.TotalPrice(),
 		Status:     string(o.Status),
-		UserUUID:   o.UserUUID.String(),
 		CreatedAt:  o.CreatedAt,
 		UpdatedAt:  o.UpdatedAt,
 	}
@@ -60,7 +59,6 @@ func OrderToModel(r record.Order, items []record.OrderItem) model.Order {
 
 	o := model.Order{
 		UUID:      uuid.MustParse(r.UUID),
-		UserUUID:  uuid.MustParse(r.UserUUID),
 		Items:     modelItems,
 		Status:    model.OrderStatus(r.Status),
 		CreatedAt: r.CreatedAt,

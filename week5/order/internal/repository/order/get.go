@@ -17,7 +17,7 @@ import (
 // Get возвращает заказ по UUID вместе со всеми его позициями.
 func (r *repository) Get(ctx context.Context, orderUUID uuid.UUID) (model.Order, error) {
 	const orderQuery = `
-		SELECT uuid, total_price, status, transaction_uuid, payment_method, user_uuid, created_at, updated_at
+		SELECT uuid, total_price, status, transaction_uuid, payment_method, created_at, updated_at
 		FROM orders
 		WHERE uuid = $1`
 

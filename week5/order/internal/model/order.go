@@ -11,7 +11,6 @@ import (
 // Содержит позиции Items, каждая из которых ссылается на деталь через PartUUID.
 type Order struct {
 	UUID            uuid.UUID
-	UserUUID        uuid.UUID
 	Items           []OrderItem
 	TransactionUUID *uuid.UUID
 	PaymentMethod   *PaymentMethod

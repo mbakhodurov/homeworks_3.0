@@ -57,7 +57,6 @@ func (s *service) Pay(ctx context.Context, orderUUID uuid.UUID, method model.Pay
 		if err := s.producer.Produce(txCtx, model.OrderPaidEvent{
 			EventUUID: uuid.New(),
 			OrderUUID: orderUUID,
-			UserUUID:  order.UserUUID,
 		}); err != nil {
 			return fmt.Errorf("отправить событие оплаты: %w", err)
 		}

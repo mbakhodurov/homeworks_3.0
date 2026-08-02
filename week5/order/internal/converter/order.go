@@ -32,7 +32,7 @@ func OrderToDTO(o model.Order) *orderv1.OrderDto {
 		CreatedAt:  o.CreatedAt,
 	}
 
-	dto.UserUUID = o.UserUUID
+	// dto.UserUUID = o.UserUUID
 
 	for _, item := range o.Items {
 		switch item.PartType {
