@@ -30,6 +30,7 @@ func ErrorInterceptor(
 		return nil, status.Error(codes.NotFound, err.Error())
 	case errors.Is(err, errs.ErrInvalidUUID),
 		errors.Is(err, errs.ErrInvalidPartInfo),
+		errors.Is(err, errs.ErrInvalidProperties),
 		errors.Is(err, errs.ErrPartTypeMismatch):
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	case errors.Is(err, errs.ErrIncompatibleParts),

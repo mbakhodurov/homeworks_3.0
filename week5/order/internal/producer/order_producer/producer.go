@@ -40,8 +40,3 @@ func (p *Producer) Produce(ctx context.Context, event model.OrderPaidEvent) erro
 		Value: data,
 	})
 }
-
-// ensure Producer implements the service interface at compile time
-var _ interface {
-	Produce(ctx context.Context, event model.OrderPaidEvent) error
-} = (*Producer)(nil)

@@ -49,7 +49,7 @@ func (a *App) Run() error {
 
 	errCh := make(chan error, 1)
 	go func() {
-		errCh <- a.diContainer.OrderPaidConsumer().Run(ctx)
+		errCh <- a.runConsumer(ctx)
 	}()
 
 	var runErr error
@@ -71,4 +71,11 @@ func (a *App) Run() error {
 	}
 
 	return runErr
+}
+
+// runConsumer запускает Kafka-потребитель OrderPaid
+func (a *App) runConsumer(ctx context.Context) error {
+	slog.Info("🚀 Kafka-потребитель OrderPaid запущен")
+
+	return a.diContainer.OrderPaidConsumer().Run(ctx)
 }
