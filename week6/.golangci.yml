@@ -1,0 +1,72 @@
+version: "2"
+
+run:
+  timeout: 5m
+  relative-path-mode: gomod
+  issues-exit-code: 1
+  tests: true
+  modules-download-mode: readonly
+
+output:
+  formats:
+    text:
+      print-linter-name: true
+      print-issued-lines: true
+      colors: true
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  uniq-by-line: true
+
+linters:
+  default: standard
+  enable:
+    - errorlint
+    - errname
+    - gosec
+    - bodyclose
+    - noctx
+    - usestdlibvars
+    - mirror
+    - nolintlint
+
+  exclusions:
+    generated: strict
+    presets:
+      - std-error-handling
+      - common-false-positives
+    rules:
+      - path: _test\.go
+        linters:
+          - gosec
+          - noctx
+          - errcheck
+
+  settings:
+    gosec:
+      config:
+        global:
+          audit: true
+        severity: "medium"
+        confidence: "medium"
+      excludes:
+        - G102
+
+    nolintlint:
+      require-explanation: true
+      require-specific: true
+
+formatters:
+  enable:
+    - gofumpt
+    - gci
+  settings:
+    gofumpt:
+      extra-rules: true
+    gci:
+      sections:
+        - Standard
+        - Default
+        - Prefix(github.com/mbakhodurov)
+      no-inline-comments: false

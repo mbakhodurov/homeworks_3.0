@@ -1,0 +1,382 @@
+openapi: 3.0.3
+info:
+  title: Order Service API
+  version: 1.0.0
+  description: |
+    API для управления заказами на постройку космических кораблей.
+
+    Позволяет создавать заказы, получать информацию о них,
+    оплачивать и отменять заказы.
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+tags:
+  - name: Orders
+    description: Операции с заказами — создание, получение, оплата и отмена
+paths:
+  /api/v1/orders:
+    get:
+      summary: Получить все заказы
+      description: Возвращает список всех заказов
+      operationId: getAllOrders
+      tags:
+        - Orders
+      responses:
+        '200':
+          description: Список заказов успешно получен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/get_all_orders_response'
+        '500':
+          $ref: '#/components/responses/internal_server_error'
+    post:
+      summary: Создать заказ
+      description: Создаёт новый заказ на постройку космического корабля
+      operationId: createOrder
+      tags:
+        - Orders
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/create_order_request'
+      responses:
+        '201':
+          description: Заказ успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/create_order_response'
+        '400':
+          $ref: '#/components/responses/bad_request'
+        '404':
+          $ref: '#/components/responses/component_not_found'
+        '409':
+          $ref: '#/components/responses/component_out_of_stock'
+        '500':
+          $ref: '#/components/responses/internal_server_error'
+  /api/v1/orders/{order_uuid}:
+    parameters:
+      - $ref: '#/components/parameters/order_uuid'
+    get:
+      summary: Получить заказ по UUID
+      description: Возвращает полную информацию о заказе на постройку космического корабля
+      operationId: getOrder
+      tags:
+        - Orders
+      responses:
+        '200':
+          description: Заказ успешно найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/order_dto'
+        '400':
+          $ref: '#/components/responses/bad_request'
+        '404':
+          $ref: '#/components/responses/order_not_found'
+        '500':
+          $ref: '#/components/responses/internal_server_error'
+  /api/v1/orders/{order_uuid}/pay:
+    post:
+      summary: Оплатить заказ
+      description: Проводит оплату заказа
+      operationId: payOrder
+      tags:
+        - Orders
+      parameters:
+        - $ref: '#/components/parameters/order_uuid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/pay_order_request'
+      responses:
+        '200':
+          description: Оплата прошла успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/pay_order_response'
+        '400':
+          $ref: '#/components/responses/bad_request'
+        '404':
+          $ref: '#/components/responses/order_not_found'
+        '409':
+          $ref: '#/components/responses/order_already_paid'
+        '500':
+          $ref: '#/components/responses/internal_server_error'
+  /api/v1/orders/{order_uuid}/cancel:
+    post:
+      summary: Отменить заказ
+      description: Отменяет заказ, который ещё не был оплачен
+      operationId: cancelOrder
+      tags:
+        - Orders
+      parameters:
+        - $ref: '#/components/parameters/order_uuid'
+      responses:
+        '200':
+          description: Заказ успешно отменён
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/cancel_order_response'
+        '400':
+          $ref: '#/components/responses/bad_request'
+        '404':
+          $ref: '#/components/responses/order_not_found'
+        '409':
+          $ref: '#/components/responses/order_already_paid'
+        '500':
+          $ref: '#/components/responses/internal_server_error'
+components:
+  schemas:
+    payment_method:
+      type: string
+      enum:
+        - CARD
+        - SBP
+        - CREDIT_CARD
+        - INVESTOR_MONEY
+      description: Способ оплаты
+      example: CARD
+    order_status:
+      type: string
+      enum:
+        - PENDING_PAYMENT
+        - PAID
+        - CANCELLED
+        - ASSEMBLED
+      description: Статус заказа
+      example: PENDING_PAYMENT
+    order_dto:
+      type: object
+      required:
+        - order_uuid
+        - hull_uuid
+        - engine_uuid
+        - total_price
+        - status
+        - created_at
+        - user_uuid
+      properties:
+        user_uuid:
+          type: string
+          format: uuid
+          description: UUID пользователя (v4)
+          example: 550e8400-e29b-41d4-a716-446655440099
+        order_uuid:
+          type: string
+          format: uuid
+          description: UUID заказа (v4)
+          example: 550e8400-e29b-41d4-a716-446655440000
+        hull_uuid:
+          type: string
+          format: uuid
+          description: UUID корпуса (v4)
+          example: 550e8400-e29b-41d4-a716-446655440001
+        engine_uuid:
+          type: string
+          format: uuid
+          description: UUID двигателя (v4)
+          example: 550e8400-e29b-41d4-a716-446655440003
+        shield_uuid:
+          type: string
+          format: uuid
+          nullable: true
+          description: UUID щита (опциональный, v4)
+          example: 550e8400-e29b-41d4-a716-446655440005
+        weapon_uuid:
+          type: string
+          format: uuid
+          nullable: true
+          description: UUID вооружения (опциональный, v4)
+          example: null
+        total_price:
+          type: integer
+          format: int64
+          description: Итоговая стоимость в копейках
+          example: 1200000
+        transaction_uuid:
+          type: string
+          format: uuid
+          nullable: true
+          description: UUID транзакции (после оплаты, v4)
+          example: null
+        payment_method:
+          nullable: true
+          description: Способ оплаты (после оплаты)
+          allOf:
+            - $ref: '#/components/schemas/payment_method'
+        status:
+          $ref: '#/components/schemas/order_status'
+        created_at:
+          type: string
+          format: date-time
+          description: Дата создания заказа
+          example: '2026-01-30T12:00:00Z'
+    get_all_orders_response:
+      type: object
+      required:
+        - orders
+        - total_count
+      properties:
+        orders:
+          type: array
+          description: Список заказов
+          items:
+            $ref: '#/components/schemas/order_dto'
+        total_count:
+          type: integer
+          format: int64
+          description: Общее количество заказов
+          example: 1
+    error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          description: HTTP-код ошибки
+        message:
+          type: string
+          description: Человекочитаемое описание ошибки
+    create_order_request:
+      type: object
+      required:
+        - hull_uuid
+        - engine_uuid
+      properties:
+        hull_uuid:
+          type: string
+          format: uuid
+          description: UUID корпуса (обязательный, v4)
+          example: 550e8400-e29b-41d4-a716-446655440001
+        engine_uuid:
+          type: string
+          format: uuid
+          description: UUID двигателя (обязательный, v4)
+          example: 550e8400-e29b-41d4-a716-446655440003
+        shield_uuid:
+          type: string
+          format: uuid
+          nullable: true
+          description: UUID щита (опциональный, v4)
+          example: 550e8400-e29b-41d4-a716-446655440005
+        weapon_uuid:
+          type: string
+          format: uuid
+          nullable: true
+          description: UUID вооружения (опциональный, v4)
+          example: 550e8400-e29b-41d4-a716-446655440006
+    create_order_response:
+      type: object
+      required:
+        - order_uuid
+        - total_price
+      properties:
+        order_uuid:
+          type: string
+          format: uuid
+          description: UUID созданного заказа (v4)
+          example: 550e8400-e29b-41d4-a716-446655440000
+        total_price:
+          type: integer
+          format: int64
+          description: Итоговая стоимость в копейках
+          example: 1200000
+    pay_order_request:
+      type: object
+      required:
+        - payment_method
+      properties:
+        payment_method:
+          $ref: '#/components/schemas/payment_method'
+    pay_order_response:
+      type: object
+      required:
+        - transaction_uuid
+      properties:
+        transaction_uuid:
+          type: string
+          format: uuid
+          description: UUID транзакции оплаты (v4)
+          example: a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d
+    cancel_order_response:
+      description: Пустой ответ при успешной отмене (успех определяется кодом 200)
+      type: object
+  responses:
+    internal_server_error:
+      description: Внутренняя ошибка сервера
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+          example:
+            code: 500
+            message: Internal server error
+    bad_request:
+      description: Невалидный запрос
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+          example:
+            code: 400
+            message: Invalid request parameters
+    component_not_found:
+      description: Компонент не найден
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+          example:
+            code: 404
+            message: Component not found
+    component_out_of_stock:
+      description: Компонент отсутствует на складе
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+          example:
+            code: 409
+            message: Component out of stock
+    order_not_found:
+      description: Заказ не найден
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+          example:
+            code: 404
+            message: Order not found
+    order_already_paid:
+      description: Заказ уже оплачен или отменён
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+          example:
+            code: 409
+            message: Order is already paid or cancelled
+  parameters:
+    order_uuid:
+      name: order_uuid
+      in: path
+      required: true
+      description: UUID заказа (v4)
+      schema:
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+x-ogen:
+  target: ./shared/pkg/openapi/order/v1
+  package: order_v1
+  clean: true
