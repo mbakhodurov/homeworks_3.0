@@ -4,19 +4,32 @@ syntax = "proto3";
 package auth.v1;
 
 import "common/v1/common.proto";
+import "google/api/annotations.proto";
 
 option go_package = "github.com/mbakhodurov/homeworks2/week6/shared/pkg/proto/auth/v1;authv1";
 
 // AuthService сервис аутентификации (вход, проверка сессии).
 service AuthService {
   // Login выполняет вход в систему и создаёт сессию.
-  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc Login(LoginRequest) returns (LoginResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/auth/login"
+      body: "*"
+    };
+  }
 
   // Whoami проверяет текущую сессию и возвращает информацию о пользователе.
-  rpc Whoami(WhoamiRequest) returns (WhoamiResponse);
+  rpc Whoami(WhoamiRequest) returns (WhoamiResponse) {
+    option (google.api.http) = {get: "/api/v1/auth/whoami"};
+  }
 
   // Logout завершает сессию пользователя.
-  rpc Logout(LogoutRequest) returns (LogoutResponse);
+  rpc Logout(LogoutRequest) returns (LogoutResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/auth/logout"
+      body: "*"
+    };
+  }
 }
 
 // LoginRequest запрос на вход в систему.

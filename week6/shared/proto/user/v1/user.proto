@@ -4,16 +4,24 @@ syntax = "proto3";
 package user.v1;
 
 import "common/v1/common.proto";
+import "google/api/annotations.proto";
 
 option go_package = "github.com/mbakhodurov/homeworks2/week6/shared/pkg/proto/user/v1;userv1";
 
 // UserService сервис управления пользователями (регистрация, получение).
 service UserService {
   // Register регистрирует нового пользователя.
-  rpc Register(RegisterRequest) returns (RegisterResponse);
+  rpc Register(RegisterRequest) returns (RegisterResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/user/register"
+      body: "*"
+    };
+  }
 
   // GetUser возвращает пользователя по UUID.
-  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+  rpc GetUser(GetUserRequest) returns (GetUserResponse) {
+    option (google.api.http) = {get: "/api/v1/user/{user_uuid}"};
+  }
 }
 
 // UserRegistrationInfo данные для регистрации пользователя.

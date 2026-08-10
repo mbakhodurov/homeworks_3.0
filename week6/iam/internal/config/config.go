@@ -15,6 +15,7 @@ var appConfig *Config
 // Config — конфигурация приложения IAMService.
 type Config struct {
 	GRPC     GRPCConfig     `yaml:"grpc"`
+	HTTP     HTTPConfig     `yaml:"http"`
 	Postgres PostgresConfig `yaml:"postgres"`
 	Redis    RedisConfig    `yaml:"redis"`
 	Session  SessionConfig  `yaml:"session"`

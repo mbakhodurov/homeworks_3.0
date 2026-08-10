@@ -40,6 +40,10 @@ func ErrorInterceptor(
 	case errors.Is(err, errs.ErrOutOfStock):
 		return nil, status.Error(codes.ResourceExhausted, err.Error())
 	default:
+		if st, ok := status.FromError(err); ok {
+			return nil, st.Err()
+		}
+
 		return nil, status.Error(codes.Internal, "внутренняя ошибка")
 	}
 }

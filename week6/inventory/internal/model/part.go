@@ -97,11 +97,11 @@ func (p *Part) Properties() *PartProperties { return &p.properties }
 func (p *Part) CreatedAt() time.Time { return p.createdAt }
 
 // PartFilter задаёт параметры фильтрации деталей.
-// Если UUIDs непустой — фильтрация по UUID. Иначе — по PartType
-// (или все детали, если PartType == "" / PartTypeUnspecified).
+// Если UUIDs непустой — фильтрация по UUID. Иначе — по PartTypes
+// (или все детали, если PartTypes пуст).
 type PartFilter struct {
-	UUIDs    []string
-	PartType PartType
+	UUIDs     []string
+	PartTypes []PartType
 }
 
 // CreatePartInput задаёт параметры создания новой детали.

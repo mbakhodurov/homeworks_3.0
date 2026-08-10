@@ -1,6 +1,7 @@
 package converter
 
 import (
+	"github.com/google/uuid"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	errs "github.com/mbakhodurov/homeworks2/week6/inventory/internal/errors"
@@ -9,21 +10,25 @@ import (
 )
 
 // ToListFilter парсит фильтр ListPartsRequest в PartFilter.
-//
-// PartsFilter.part_type в proto — список (repeated), а доменная фильтрация
-// поддерживает один тип: берём первый элемент списка, если он есть.
 func ToListFilter(req *inventoryv1.ListPartsRequest) (model.PartFilter, error) {
 	filter := req.GetFilter()
 	if filter == nil {
 		return model.PartFilter{}, nil
 	}
 
-	var partType model.PartType
-	if types := filter.GetPartType(); len(types) > 0 {
-		partType = PartTypeToModel(types[0])
+	uuids := filter.GetUuids()
+	for _, u := range uuids {
+		if _, err := uuid.Parse(u); err != nil {
+			return model.PartFilter{}, errs.ErrInvalidUUID
+		}
 	}
 
-	return model.PartFilter{UUIDs: filter.GetUuids(), PartType: partType}, nil
+	var partTypes []model.PartType
+	for _, t := range filter.GetPartType() {
+		partTypes = append(partTypes, PartTypeToModel(t))
+	}
+
+	return model.PartFilter{UUIDs: uuids, PartTypes: partTypes}, nil
 }
 
 // ToCreatePartInput конвертирует CreatePartsRequest во входные данные создания детали.

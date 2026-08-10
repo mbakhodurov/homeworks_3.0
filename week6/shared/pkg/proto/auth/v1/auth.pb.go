@@ -10,6 +10,7 @@ package authv1
 
 import (
 	v1 "github.com/mbakhodurov/homeworks2/week6/shared/pkg/proto/common/v1"
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -313,7 +314,7 @@ var File_auth_v1_auth_proto protoreflect.FileDescriptor
 
 const file_auth_v1_auth_proto_rawDesc = "" +
 	"\n" +
-	"\x12auth/v1/auth.proto\x12\aauth.v1\x1a\x16common/v1/common.proto\"@\n" +
+	"\x12auth/v1/auth.proto\x12\aauth.v1\x1a\x16common/v1/common.proto\x1a\x1cgoogle/api/annotations.proto\"@\n" +
 	"\fLoginRequest\x12\x14\n" +
 	"\x05login\x18\x01 \x01(\tR\x05login\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\"2\n" +
@@ -326,11 +327,11 @@ const file_auth_v1_auth_proto_rawDesc = "" +
 	"\x04user\x18\x02 \x01(\v2\x0f.common.v1.UserR\x04user\"2\n" +
 	"\rLogoutRequest\x12!\n" +
 	"\fsession_uuid\x18\x01 \x01(\tR\vsessionUuid\"\x10\n" +
-	"\x0eLogoutResponse2\xbb\x01\n" +
-	"\vAuthService\x126\n" +
-	"\x05Login\x12\x15.auth.v1.LoginRequest\x1a\x16.auth.v1.LoginResponse\x129\n" +
-	"\x06Whoami\x12\x16.auth.v1.WhoamiRequest\x1a\x17.auth.v1.WhoamiResponse\x129\n" +
-	"\x06Logout\x12\x16.auth.v1.LogoutRequest\x1a\x17.auth.v1.LogoutResponseBIZGgithub.com/mbakhodurov/homeworks2/week6/shared/pkg/proto/auth/v1;authv1b\x06proto3"
+	"\x0eLogoutResponse2\x97\x02\n" +
+	"\vAuthService\x12U\n" +
+	"\x05Login\x12\x15.auth.v1.LoginRequest\x1a\x16.auth.v1.LoginResponse\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/api/v1/auth/login\x12V\n" +
+	"\x06Whoami\x12\x16.auth.v1.WhoamiRequest\x1a\x17.auth.v1.WhoamiResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/api/v1/auth/whoami\x12Y\n" +
+	"\x06Logout\x12\x16.auth.v1.LogoutRequest\x1a\x17.auth.v1.LogoutResponse\"\x1e\x82\xd3\xe4\x93\x02\x18:\x01*\"\x13/api/v1/auth/logoutBIZGgithub.com/mbakhodurov/homeworks2/week6/shared/pkg/proto/auth/v1;authv1b\x06proto3"
 
 var (
 	file_auth_v1_auth_proto_rawDescOnce sync.Once

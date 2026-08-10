@@ -16,7 +16,108 @@
   "produces": [
     "application/json"
   ],
-  "paths": {},
+  "paths": {
+    "/api/v1/auth/login": {
+      "post": {
+        "summary": "Login выполняет вход в систему и создаёт сессию.",
+        "operationId": "AuthService_Login",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1LoginResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "LoginRequest запрос на вход в систему.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1LoginRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "summary": "Logout завершает сессию пользователя.",
+        "operationId": "AuthService_Logout",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1LogoutResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "LogoutRequest запрос на завершение сессии.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1LogoutRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
+    "/api/v1/auth/whoami": {
+      "get": {
+        "summary": "Whoami проверяет текущую сессию и возвращает информацию о пользователе.",
+        "operationId": "AuthService_Whoami",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1WhoamiResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "session_uuid",
+            "description": "session_uuid UUID активной сессии.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    }
+  },
   "definitions": {
     "protobufAny": {
       "type": "object",
@@ -45,6 +146,117 @@
           }
         }
       }
+    },
+    "v1LoginRequest": {
+      "type": "object",
+      "properties": {
+        "login": {
+          "type": "string",
+          "description": "login логин пользователя."
+        },
+        "password": {
+          "type": "string",
+          "description": "password пароль пользователя."
+        }
+      },
+      "description": "LoginRequest запрос на вход в систему."
+    },
+    "v1LoginResponse": {
+      "type": "object",
+      "properties": {
+        "session_uuid": {
+          "type": "string",
+          "description": "session_uuid UUID созданной сессии."
+        }
+      },
+      "description": "LoginResponse ответ на вход в систему."
+    },
+    "v1LogoutRequest": {
+      "type": "object",
+      "properties": {
+        "session_uuid": {
+          "type": "string",
+          "description": "session_uuid UUID сессии для завершения."
+        }
+      },
+      "description": "LogoutRequest запрос на завершение сессии."
+    },
+    "v1LogoutResponse": {
+      "type": "object",
+      "description": "LogoutResponse ответ на завершение сессии."
+    },
+    "v1Session": {
+      "type": "object",
+      "properties": {
+        "uuid": {
+          "type": "string",
+          "description": "uuid уникальный идентификатор сессии."
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "created_at время создания сессии."
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "updated_at время последнего обновления сессии."
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "expires_at время истечения сессии."
+        }
+      },
+      "description": "Session информация о сессии пользователя."
+    },
+    "v1User": {
+      "type": "object",
+      "properties": {
+        "uuid": {
+          "type": "string",
+          "description": "uuid уникальный идентификатор пользователя."
+        },
+        "info": {
+          "$ref": "#/definitions/v1UserInfo",
+          "description": "info базовая информация."
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "created_at дата создания."
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "updated_at дата обновления."
+        }
+      },
+      "description": "User полная информация о пользователе."
+    },
+    "v1UserInfo": {
+      "type": "object",
+      "properties": {
+        "login": {
+          "type": "string",
+          "description": "login логин пользователя."
+        }
+      },
+      "description": "UserInfo базовая информация о пользователе."
+    },
+    "v1WhoamiResponse": {
+      "type": "object",
+      "properties": {
+        "session": {
+          "$ref": "#/definitions/v1Session",
+          "description": "session информация о текущей сессии."
+        },
+        "user": {
+          "$ref": "#/definitions/v1User",
+          "description": "user владелец сессии."
+        }
+      },
+      "description": "WhoamiResponse ответ с информацией о сессии и пользователе."
     }
   }
 }

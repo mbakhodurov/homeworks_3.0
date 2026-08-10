@@ -11,20 +11,27 @@ import (
 	"github.com/mbakhodurov/homeworks2/week6/inventory/internal/repository/record"
 )
 
-// List возвращает детали, отфильтрованные по filter.UUIDs (приоритет) или по filter.PartType.
+// List возвращает детали, отфильтрованные по filter.UUIDs (приоритет) или по filter.PartTypes.
 func (r *repository) List(ctx context.Context, filter model.PartFilter) ([]model.Part, error) {
 	var (
 		rows pgx.Rows
 		err  error
 	)
 
+	partTypes := make([]string, 0, len(filter.PartTypes))
+	for _, t := range filter.PartTypes {
+		if t != "" && t != model.PartTypeUnspecified {
+			partTypes = append(partTypes, string(t))
+		}
+	}
+
 	switch {
 	case len(filter.UUIDs) > 0:
 		query := `SELECT ` + partColumns + ` FROM parts WHERE uuid = ANY($1) ORDER BY name`
 		rows, err = r.getter.DefaultTrOrDB(ctx, r.pool).Query(ctx, query, filter.UUIDs)
-	case filter.PartType != "" && filter.PartType != model.PartTypeUnspecified:
-		query := `SELECT ` + partColumns + ` FROM parts WHERE part_type = $1 ORDER BY name`
-		rows, err = r.getter.DefaultTrOrDB(ctx, r.pool).Query(ctx, query, string(filter.PartType))
+	case len(partTypes) > 0:
+		query := `SELECT ` + partColumns + ` FROM parts WHERE part_type = ANY($1) ORDER BY name`
+		rows, err = r.getter.DefaultTrOrDB(ctx, r.pool).Query(ctx, query, partTypes)
 	default:
 		query := `SELECT ` + partColumns + ` FROM parts ORDER BY name`
 		rows, err = r.getter.DefaultTrOrDB(ctx, r.pool).Query(ctx, query)
