@@ -1,6 +1,6 @@
 module github.com/mbakhodurov/homeworks2/week6/order
 
-go 1.25.7
+go 1.25.4
 
 require (
 	github.com/IBM/sarama v1.60.1

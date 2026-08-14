@@ -14,6 +14,7 @@ type UserRepository interface {
 	Create(ctx context.Context, user model.User) error
 	GetByLogin(ctx context.Context, login string) (model.User, error)
 	GetByUUID(ctx context.Context, userUUID uuid.UUID) (model.User, error)
+	GetAll(ctx context.Context) ([]model.User, error)
 }
 
 // SessionRepository определяет контракт для работы с хранилищем сессий.

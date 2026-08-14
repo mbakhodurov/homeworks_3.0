@@ -22,6 +22,11 @@ service UserService {
   rpc GetUser(GetUserRequest) returns (GetUserResponse) {
     option (google.api.http) = {get: "/api/v1/user/{user_uuid}"};
   }
+
+  // GetAllUsers возвращает список всех пользователей.
+  rpc GetAllUsers(GetAllUsersRequest) returns (GetAllUsersResponse) {
+    option (google.api.http) = {get: "/api/v1/users"};
+  }
 }
 
 // UserRegistrationInfo данные для регистрации пользователя.
@@ -55,4 +60,13 @@ message GetUserRequest {
 message GetUserResponse {
   // user найденный пользователь.
   common.v1.User user = 1;
+}
+
+// GetAllUsersRequest запрос на получение всех пользователей.
+message GetAllUsersRequest {}
+
+// GetAllUsersResponse ответ со списком пользователей.
+message GetAllUsersResponse {
+  // users список пользователей.
+  repeated common.v1.User users = 1;
 }

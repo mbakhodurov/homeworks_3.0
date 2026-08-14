@@ -82,6 +82,29 @@
           "UserService"
         ]
       }
+    },
+    "/api/v1/users": {
+      "get": {
+        "summary": "GetAllUsers возвращает список всех пользователей.",
+        "operationId": "UserService_GetAllUsers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetAllUsersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "UserService"
+        ]
+      }
     }
   },
   "definitions": {
@@ -112,6 +135,20 @@
           }
         }
       }
+    },
+    "v1GetAllUsersResponse": {
+      "type": "object",
+      "properties": {
+        "users": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1User"
+          },
+          "description": "users список пользователей."
+        }
+      },
+      "description": "GetAllUsersResponse ответ со списком пользователей."
     },
     "v1GetUserResponse": {
       "type": "object",

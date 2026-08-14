@@ -13,4 +13,5 @@ import (
 type UserService interface {
 	Register(ctx context.Context, in input.RegisterInput) (uuid.UUID, error)
 	GetUser(ctx context.Context, userUUID string) (model.User, error)
+	GetAllUsers(ctx context.Context) ([]model.User, error)
 }
