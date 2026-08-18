@@ -1,0 +1,18 @@
+grpc:
+  host: "localhost"
+  port: "50051"
+http:
+  host: ""
+  port: "8083"
+pg:
+  host: "localhost"
+  port: "5433"
+  database: "inventory"
+  user: "inventory_admin"
+  password: "inventory_secret"
+  sslmode: "disable"
+logger:
+  level: "info"
+otel:
+  endpoint: "localhost:4317"
+  service_name: "inventory-service"

@@ -1,0 +1,232 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "user/v1/user.proto",
+    "description": "Package user.v1 содержит сервис управления пользователями.",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "UserService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/user/register": {
+      "post": {
+        "summary": "Register регистрирует нового пользователя.",
+        "operationId": "UserService_Register",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1RegisterResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "RegisterRequest запрос на регистрацию.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1RegisterRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/api/v1/user/{user_uuid}": {
+      "get": {
+        "summary": "GetUser возвращает пользователя по UUID.",
+        "operationId": "UserService_GetUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_uuid",
+            "description": "user_uuid UUID пользователя.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "summary": "GetAllUsers возвращает список всех пользователей.",
+        "operationId": "UserService_GetAllUsers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetAllUsersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "UserService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1GetAllUsersResponse": {
+      "type": "object",
+      "properties": {
+        "users": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1User"
+          },
+          "description": "users список пользователей."
+        }
+      },
+      "description": "GetAllUsersResponse ответ со списком пользователей."
+    },
+    "v1GetUserResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/v1User",
+          "description": "user найденный пользователь."
+        }
+      },
+      "description": "GetUserResponse ответ с пользователем."
+    },
+    "v1RegisterRequest": {
+      "type": "object",
+      "properties": {
+        "info": {
+          "$ref": "#/definitions/v1UserRegistrationInfo",
+          "description": "info данные для регистрации."
+        }
+      },
+      "description": "RegisterRequest запрос на регистрацию."
+    },
+    "v1RegisterResponse": {
+      "type": "object",
+      "properties": {
+        "user_uuid": {
+          "type": "string",
+          "description": "user_uuid UUID созданного пользователя."
+        }
+      },
+      "description": "RegisterResponse ответ на регистрацию."
+    },
+    "v1User": {
+      "type": "object",
+      "properties": {
+        "uuid": {
+          "type": "string",
+          "description": "uuid уникальный идентификатор пользователя."
+        },
+        "info": {
+          "$ref": "#/definitions/v1UserInfo",
+          "description": "info базовая информация."
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "created_at дата создания."
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "updated_at дата обновления."
+        }
+      },
+      "description": "User полная информация о пользователе."
+    },
+    "v1UserInfo": {
+      "type": "object",
+      "properties": {
+        "login": {
+          "type": "string",
+          "description": "login логин пользователя."
+        }
+      },
+      "description": "UserInfo базовая информация о пользователе."
+    },
+    "v1UserRegistrationInfo": {
+      "type": "object",
+      "properties": {
+        "info": {
+          "$ref": "#/definitions/v1UserInfo",
+          "description": "info основная информация о пользователе."
+        },
+        "password": {
+          "type": "string",
+          "description": "password пароль."
+        }
+      },
+      "description": "UserRegistrationInfo данные для регистрации пользователя."
+    }
+  }
+}

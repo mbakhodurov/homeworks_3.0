@@ -1,0 +1,16 @@
+kafka:
+  brokers:
+    - "localhost:9092"
+order_paid_consumer:
+  topic: "order.paid"
+  group_id: "assembly-service"
+ship_assembled_producer:
+  topic: "assembly.ship-assembled"
+assembler:
+  min_build_time_sec: 5
+  max_build_time_sec: 15
+logger:
+  level: "info"
+otel:
+  endpoint: "localhost:4317"
+  service_name: "assembly-service"

@@ -1,0 +1,27 @@
+http:
+  host: "localhost"
+  port: "8080"
+pg:
+  host: "localhost"
+  port: "5432"
+  database: "order"
+  user: "order_admin"
+  password: "order_secret"
+  sslmode: "disable"
+inventory_client:
+  address: "localhost:50051"
+payment_client:
+  address: "localhost:50052"
+logger:
+  level: "info"
+kafka:
+  brokers:
+    - "localhost:9092"
+order_paid_producer:
+  topic: "order.paid"
+ship_assembled_consumer:
+  topic: "assembly.ship-assembled"
+  group_id: "order-service"
+otel:
+  endpoint: "localhost:4317"
+  service_name: "order-service"
