@@ -105,7 +105,7 @@ func (a *App) initHTTPServer(ctx context.Context) {
 
 	a.httpServer = &http.Server{
 		Addr:              config.AppConfig().HTTP.Address(),
-		Handler:           instrumentedHandler,
+		Handler:           traceIDMiddleware(instrumentedHandler),
 		ReadHeaderTimeout: httpReadHeaderTimeout,
 		ReadTimeout:       httpReadTimeout,
 		WriteTimeout:      httpWriteTimeout,
@@ -114,6 +114,18 @@ func (a *App) initHTTPServer(ctx context.Context) {
 
 	closer.Add("HTTP сервер", func(shutdownCtx context.Context) error {
 		return a.httpServer.Shutdown(shutdownCtx)
+	})
+}
+
+// traceIDMiddleware добавляет trace ID в заголовок HTTP-ответа,
+// чтобы клиент мог найти трейс в Jaeger по значению x-trace-id.
+// Должен оборачивать otelhttp.NewHandler, чтобы span уже был в ctx.
+func traceIDMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if traceID := tracing.TraceIDFromContext(r.Context()); traceID != "" {
+			w.Header().Set(tracing.TraceIDHeader, traceID)
+		}
+		next.ServeHTTP(w, r)
 	})
 }
 

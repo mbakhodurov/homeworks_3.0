@@ -119,7 +119,10 @@ func (a *App) initListener(_ context.Context) {
 func (a *App) initGRPCServer(ctx context.Context) {
 	a.grpcServer = grpc.NewServer(
 		grpc.StatsHandler(otelgrpc.NewServerHandler()),
-		grpc.ChainUnaryInterceptor(interceptor.ErrorInterceptor),
+		grpc.ChainUnaryInterceptor(
+			tracing.TraceIDUnaryServerInterceptor(),
+			interceptor.ErrorInterceptor,
+		),
 	)
 
 	authAPI := a.diContainer.AuthAPI(ctx)

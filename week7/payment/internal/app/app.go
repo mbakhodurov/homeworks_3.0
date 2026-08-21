@@ -136,6 +136,7 @@ func (a *App) initGRPCServer() {
 			PermitWithoutStream: false,
 		}),
 		grpc.ChainUnaryInterceptor(
+			tracing.TraceIDUnaryServerInterceptor(),
 			interceptor.RecoveryInterceptor(),
 			interceptor.ErrorInterceptor,
 			interceptor.LoggerInterceptor(),
