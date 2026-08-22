@@ -1,0 +1,25 @@
+grpc:
+  host: "0.0.0.0"
+  port: "50051"
+
+http:
+  host: "0.0.0.0"
+  port: "8083"
+
+pg:
+  host: "postgres-inventory"
+  port: "5432"
+  database: "inventory"
+  user: "inventory_admin"
+  password: "inventory_secret"
+  sslmode: "disable"
+
+iam_client:
+  address: "iam-service:50053"
+
+logger:
+  level: "info"
+
+otel:
+  endpoint: "otel-collector:4317"
+  service_name: "inventory-service"

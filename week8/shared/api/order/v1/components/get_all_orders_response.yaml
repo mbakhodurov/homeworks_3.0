@@ -1,0 +1,15 @@
+type: object
+required:
+  - orders
+  - total_count
+properties:
+  orders:
+    type: array
+    description: Список заказов
+    items:
+      $ref: './order_dto.yaml'
+  total_count:
+    type: integer
+    format: int64
+    description: Общее количество заказов
+    example: 1

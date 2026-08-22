@@ -1,0 +1,522 @@
+version: '3'
+
+env:
+  GOPROXY: direct
+
+vars:
+  GO_VERSION: '1.26.0'
+  VEGETA_VERSION: 'v12.13.0'
+  GOLANGCI_LINT_VERSION: 'v2.12.2'
+  GCI_VERSION: 'v0.14.0'
+  GOFUMPT_VERSION: 'v0.10.0'
+  BUF_VERSION: '1.69.0'
+  PROTOC_GEN_GO_VERSION: 'v1.36.11'
+  PROTOC_GEN_GO_GRPC_VERSION: 'v1.6.1'
+  PROTOC_GEN_GRPC_GATEWAY_VERSION: 'v2.27.7'
+  PROTOC_GEN_OPENAPIV2_VERSION: 'v2.27.7'
+  PROTOC_GEN_VALIDATE_VERSION: 'v1.2.1'
+  OGEN_VERSION: 'v1.20.3'
+  YQ_VERSION: 'v4.45.2'
+  GOOSE_VERSION: 'v3.26.0'
+
+  BIN_DIR: '{{.ROOT_DIR}}/bin'
+  GOLANGCI_LINT: '{{.BIN_DIR}}/golangci-lint'
+  GCI: '{{.BIN_DIR}}/gci'
+  GOFUMPT: '{{.BIN_DIR}}/gofumpt'
+  BUF: '{{.BIN_DIR}}/buf'
+  PROTOC_GEN_GO: '{{.BIN_DIR}}/protoc-gen-go'
+  PROTOC_GEN_GO_GRPC: '{{.BIN_DIR}}/protoc-gen-go-grpc'
+  PROTOC_GEN_GRPC_GATEWAY: '{{.BIN_DIR}}/protoc-gen-grpc-gateway'
+  PROTOC_GEN_OPENAPIV2: '{{.BIN_DIR}}/protoc-gen-openapiv2'
+  PROTOC_GEN_VALIDATE: '{{.BIN_DIR}}/protoc-gen-validate'
+  OGEN: '{{.BIN_DIR}}/ogen'
+  YQ: '{{.BIN_DIR}}/yq'
+  GOOSE: '{{.BIN_DIR}}/goose'
+  VEGETA: '{{.BIN_DIR}}/vegeta'
+
+  NODE_MODULES_DIR: '{{.ROOT_DIR}}/node_modules/.bin'
+  REDOCLY: '{{.NODE_MODULES_DIR}}/redocly'
+
+  OPEN_API_ORDER_V1_BASE: '{{.ROOT_DIR}}/shared/api/order/v1/order.openapi.yaml'
+  OPEN_API_ORDER_V1_BUNDLE: '{{.ROOT_DIR}}/shared/api/bundles/order.openapi.v1.bundle.yaml'
+
+  OPEN_API_FILES: '{{.ROOT_DIR}}/shared/api/bundles'
+
+  MODULES: assembly iam inventory order payment
+
+  KIBANA_URL: 'http://localhost:{{.KIBANA_PORT}}'
+  ELASTICSEARCH_URL: 'http://localhost:{{.ELASTICSEARCH_PORT}}'
+
+dotenv: ['core.env']
+
+tasks:
+  formatters:install:
+    desc: "Устанавливает gofumpt и gci"
+    cmds:
+      - echo '📦 Устанавливаем gofumpt...'
+      - GOBIN={{.BIN_DIR}} go install mvdan.cc/gofumpt@{{.GOFUMPT_VERSION}}
+      - echo '📦 Устанавливаем gci...'
+      - GOBIN={{.BIN_DIR}} go install github.com/daixiang0/gci@{{.GCI_VERSION}}
+    status:
+      - test -x {{.GOFUMPT}}
+      - test -x {{.GCI}}
+
+  golangci-lint:install:
+    desc: "Устанавливает golangci-lint"
+    cmds:
+      - echo '📦 Устанавливаем golangci-lint...'
+      - GOBIN={{.BIN_DIR}} go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@{{.GOLANGCI_LINT_VERSION}}
+    status:
+      - test -x {{.GOLANGCI_LINT}}
+
+  buf:install:
+    desc: "Устанавливает buf"
+    cmds:
+      - echo '📦 Устанавливаем buf...'
+      - GOBIN={{.BIN_DIR}} go install github.com/bufbuild/buf/cmd/buf@v{{.BUF_VERSION}}
+    status:
+      - test -x {{.BUF}}
+
+  proto:install-plugins:
+    desc: "Устанавливает protoc-плагины"
+    cmds:
+      - echo '📦 Устанавливаем protoc-gen-go...'
+      - GOBIN={{.BIN_DIR}} go install google.golang.org/protobuf/cmd/protoc-gen-go@{{.PROTOC_GEN_GO_VERSION}}
+      - echo '📦 Устанавливаем protoc-gen-go-grpc...'
+      - GOBIN={{.BIN_DIR}} go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@{{.PROTOC_GEN_GO_GRPC_VERSION}}
+      - echo '📦 Устанавливаем protoc-gen-grpc-gateway...'
+      - GOBIN={{.BIN_DIR}} go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@{{.PROTOC_GEN_GRPC_GATEWAY_VERSION}}
+      - echo '📦 Устанавливаем protoc-gen-openapiv2...'
+      - GOBIN={{.BIN_DIR}} go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@{{.PROTOC_GEN_OPENAPIV2_VERSION}}
+      - echo '📦 Устанавливаем protoc-gen-validate...'
+      - GOBIN={{.BIN_DIR}} go install github.com/envoyproxy/protoc-gen-validate@{{.PROTOC_GEN_VALIDATE_VERSION}}
+    status:
+      - test -x {{.PROTOC_GEN_GO}}
+      - test -x {{.PROTOC_GEN_GO_GRPC}}
+      - test -x {{.PROTOC_GEN_GRPC_GATEWAY}}
+      - test -x {{.PROTOC_GEN_OPENAPIV2}}
+      - test -x {{.PROTOC_GEN_VALIDATE}}
+
+  ogen:install:
+    desc: "Устанавливает ogen"
+    cmds:
+      - echo '📦 Устанавливаем ogen...'
+      - GOBIN={{.BIN_DIR}} go install github.com/ogen-go/ogen/cmd/ogen@{{.OGEN_VERSION}}
+    status:
+      - test -x {{.OGEN}}
+
+  goose:install:
+    desc: "Устанавливает goose"
+    cmds:
+      - GOBIN={{.BIN_DIR}} go install github.com/pressly/goose/v3/cmd/goose@{{.GOOSE_VERSION}}
+    status:
+      - test -x {{.GOOSE}}
+
+  vegeta:install:
+    desc: "Устанавливает vegeta (HTTP нагрузочное тестирование)"
+    cmds:
+      - GOBIN={{.BIN_DIR}} go install github.com/tsenart/vegeta/v12@{{.VEGETA_VERSION}}
+    status:
+      - test -x {{.VEGETA}}
+
+  setup:
+    desc: "Устанавливает все инструменты"
+    deps: [formatters:install, golangci-lint:install, buf:install, proto:install-plugins, goose:install, vegeta:install]
+
+  format:
+    desc: "Форматирует код (gofumpt + gci)"
+    deps: [formatters:install]
+    cmds:
+      - echo '🧹 Форматируем код через gofumpt...'
+      - find . -type f -name '*.go' ! -path '*/mocks/*' ! -path '*/pkg/proto/*' ! -path '*/pkg/openapi/*' -exec {{.GOFUMPT}} -extra -w {} +
+      - echo '📦 Сортируем импорты через gci...'
+      - find . -type f -name '*.go' ! -path '*/mocks/*' ! -path '*/pkg/proto/*' ! -path '*/pkg/openapi/*' -exec {{.GCI}} write -s standard -s default -s "prefix(github.com/mbakhodurov)" {} +
+
+  build:
+    desc: "Собирает все Go-модули (go build)"
+    cmds:
+      - go build ./assembly/... ./iam/... ./inventory/... ./order/... ./payment/...
+
+  lint:
+    desc: "Запускает golangci-lint"
+    deps: [golangci-lint:install]
+    cmds:
+      - '{{.GOLANGCI_LINT}} run --allow-parallel-runners assembly/... iam/... inventory/... order/... payment/... --config=.golangci.yml'
+
+  proto:format:
+    desc: "Форматирует .proto-файлы (buf format)"
+    deps: [buf:install]
+    dir: shared/proto
+    cmds:
+      - echo '🧹 Форматируем .proto-файлы...'
+      - '{{.BUF}} format -w'
+
+  proto:lint:
+    desc: "Проверяет .proto-файлы линтером"
+    deps: [proto:install-plugins, proto:format]
+    dir: shared/proto
+    cmds:
+      - echo '🔍 Проверяем .proto-файлы...'
+      - '{{.BUF}} lint'
+
+  proto:gen:
+    desc: "Генерирует Go-код из .proto"
+    deps: [proto:install-plugins, proto:format]
+    dir: shared/proto
+    cmds:
+      - echo '🔨 Генерируем Go-код из .proto...'
+      - '{{.BUF}} generate'
+
+  redocly-cli:install:
+    desc: Установить локально Redocly CLI
+    cmds:
+      - |
+        [ -f {{.REDOCLY}} ] || {
+          npm install
+        }
+    status:
+      - test -x {{.REDOCLY}}
+
+  redocly-cli:order-v1-bundle:
+    desc: Собрать OpenAPI в один файл через локальный redocly
+    deps: [ redocly-cli:install ]
+    cmds:
+      - '{{.REDOCLY}} bundle {{.OPEN_API_ORDER_V1_BASE}} -o {{.OPEN_API_ORDER_V1_BUNDLE}}'
+      - mkdir -p {{.ROOT_DIR}}/shared/static/generated
+      - cp {{.OPEN_API_ORDER_V1_BUNDLE}} {{.ROOT_DIR}}/shared/static/generated/order.swagger.yaml
+
+  redocly-cli:bundle:
+    desc: Собрать все схемы OpenAPI в общие файлы через локальный redocly
+    deps: [ redocly-cli:install ]
+    cmds:
+      - task: redocly-cli:order-v1-bundle
+
+  yq:install:
+    desc: "Устанавливает yq в bin/ при необходимости"
+    cmds:
+      - |
+        [ -f {{.YQ}} ] || {
+          echo '📦 Installing yq...'
+          GOBIN={{.BIN_DIR}} go install github.com/mikefarah/yq/v4@{{.YQ_VERSION}}
+        }
+
+  ogen:gen:
+    desc: "Генерация Go-кода из всех OpenAPI-деклараций с x-ogen"
+    deps: [ ogen:install, yq:install ]
+    cmds:
+      - task: redocly-cli:bundle
+      - |
+        find {{.OPEN_API_FILES}} -name '*.yaml' -o -name '*.yml' | while read -r file; do
+          if [ -f "$file" ] && grep -q 'x-ogen:' "$file"; then
+            echo "🚀 Generating from: $file"
+            target=$({{.YQ}} e '."x-ogen".target' "$file")
+            package=$({{.YQ}} e '."x-ogen".package' "$file")
+            echo "📁 Target: $target"
+            echo "📦 Package: $package"
+            {{.OGEN}} \
+              --target "$target" \
+              --package "$package" \
+              --clean \
+              "$file" || exit 1
+          fi
+        done
+
+  gen:
+    desc: "Генерирует весь код"
+    cmds:
+      - task: proto:gen
+      - task: ogen:gen
+
+  deps:update:
+    desc: "Обновляет зависимости"
+    cmds:
+      - echo '🔄 Синхронизируем go.work...'
+      - go work sync
+      - echo '🔄 Обновляем зависимости в сервисах...'
+      - for: { var: MODULES }
+        cmd: cd {{.ITEM}} && go mod tidy -compat={{.GO_VERSION}}
+      - echo '🔄 Обновляем зависимости в platform...'
+      - cd platform && go mod tidy -compat={{.GO_VERSION}}
+      - echo '🔄 Обновляем зависимости в shared (proto/openapi)...'
+      - cd shared && go mod tidy -compat={{.GO_VERSION}}
+
+  up-core:
+    desc: "Создать общую сеть и поднять всю инфраструктуру (Kafka + Redis + Observability + БД)"
+    cmds:
+      - echo '[task] Создаём общую сеть microservices-net'
+      - docker network rm microservices-net 2>/dev/null || true
+      - docker network create microservices-net 2>/dev/null || true
+      - echo '[task] Поднимаем core контейнеры (Kafka + Redis rate limiter)'
+      - docker compose -f deploy/compose/core/docker-compose.yml --env-file core.env up --build --detach
+      - echo '[task] Поднимаем observability (OTEL Collector, ES, Kibana, Prometheus, Grafana, Jaeger)'
+      - docker compose -f deploy/compose/observability/docker-compose.yml --env-file core.env up --build --detach
+      - echo '[task] Поднимаем PostgreSQL для Order'
+      - docker compose -f deploy/compose/order/docker-compose.yml --env-file order.env up --build --detach
+      - echo '[task] Поднимаем PostgreSQL + Redis для IAM'
+      - docker compose -f deploy/compose/iam/docker-compose.yml --env-file iam.env up --build --detach
+      - echo '[task] Поднимаем PostgreSQL для Inventory'
+      - docker compose -f deploy/compose/inventory/docker-compose.yml --env-file inventory.env up --build --detach
+
+  down-core:
+    desc: "Остановить всю инфраструктуру и удалить сеть"
+    cmds:
+      - echo '[task] Останавливаем сервисы приложения'
+      - docker compose -f deploy/compose/services/docker-compose.yml --env-file core.env down --volumes 2>/dev/null || true
+      - echo '[task] Останавливаем observability'
+      - docker compose -f deploy/compose/observability/docker-compose.yml --env-file core.env down --volumes
+      - echo '[task] Останавливаем core контейнеры (Kafka + Redis rate limiter)'
+      - docker compose -f deploy/compose/core/docker-compose.yml --env-file core.env down --volumes
+      - echo '[task] Останавливаем PostgreSQL Order'
+      - docker compose -f deploy/compose/order/docker-compose.yml --env-file order.env down --volumes
+      - echo '[task] Останавливаем PostgreSQL + Redis IAM'
+      - docker compose -f deploy/compose/iam/docker-compose.yml --env-file iam.env down --volumes
+      - echo '[task] Останавливаем PostgreSQL Inventory'
+      - docker compose -f deploy/compose/inventory/docker-compose.yml --env-file inventory.env down --volumes
+      - echo '[task] Удаляем общую сеть microservices-net'
+      - docker network rm microservices-net 2>/dev/null || true
+
+  es:wait:
+    desc: "Ожидает готовности Elasticsearch"
+    cmds:
+      - echo 'Ожидаем готовности Elasticsearch...'
+      - |
+        for i in $(seq 1 60); do
+          curl -sSf {{.ELASTICSEARCH_URL}}/_cluster/health >/dev/null 2>&1 && break
+          sleep 2
+        done
+
+  es:create-template:
+    desc: "Создает index template для data stream app-logs"
+    cmds:
+      - echo 'Создаем index template app-logs-template (data stream)...'
+      - |
+        curl -sS -X PUT {{.ELASTICSEARCH_URL}}/_index_template/app-logs-template \
+          -H "Content-Type: application/json" \
+          --data '{"index_patterns":["app-logs*"],"data_stream":{},"priority":500}'
+        echo ""
+        echo 'Index template app-logs-template создан'
+
+  es:init:
+    desc: "Ожидает Elasticsearch и создает index template для data stream"
+    cmds:
+      - task: es:wait
+      - task: es:create-template
+
+  kibana:wait:
+    desc: "Ожидает готовности Kibana"
+    cmds:
+      - echo 'Ожидаем готовности Kibana...'
+      - |
+        for i in $(seq 1 60); do
+          curl -sSf {{.KIBANA_URL}}/api/status >/dev/null 2>&1 && break
+          sleep 2
+        done
+
+  kibana:create-view:
+    desc: "Создает Data View в Kibana и устанавливает его как default"
+    cmds:
+      - echo 'Создаем Data View app-logs*...'
+      - |
+        RESPONSE=$(curl -sS -X POST {{.KIBANA_URL}}/api/data_views/data_view \
+          -H "kbn-xsrf: true" \
+          -H "Content-Type: application/json" \
+          --data '{"data_view":{"title":"app-logs*","name":"App Logs","timeFieldName":"@timestamp","allowNoIndex":true},"override":true}')
+        DATA_VIEW_ID=$(echo "$RESPONSE" | jq -r ".data_view.id // empty")
+        echo "Data View ID: $DATA_VIEW_ID"
+        if [ -n "$DATA_VIEW_ID" ]; then
+          curl -sS -X POST {{.KIBANA_URL}}/api/data_views/default \
+            -H "kbn-xsrf: true" \
+            -H "Content-Type: application/json" \
+            -d "{\"data_view_id\": \"$DATA_VIEW_ID\", \"force\": true}"
+          echo 'Data View создан и установлен как default'
+        else
+          echo 'Не удалось создать Data View'
+          exit 1
+        fi
+
+  kibana:init:
+    desc: "Готовит Elasticsearch (template) и Kibana (Data View) для просмотра логов"
+    cmds:
+      - task: es:init
+      - task: kibana:wait
+      - task: kibana:create-view
+
+  up-order:
+    desc: Поднять Order сервис и все его зависимости
+    dir: deploy/compose/order
+    cmds:
+      - echo "[task] Поднимаем Order с зависимостями"
+      - docker compose --env-file ../../../order.env up --build --detach
+
+  down-order:
+    desc: Остановить и удалить Order сервис и все его зависимости
+    dir: deploy/compose/order
+    cmds:
+      - echo "[task] Останавливаем Order с зависимостями"
+      - docker compose --env-file ../../../order.env down --volumes
+
+  up-inventory:
+    desc: Поднять Inventory сервис и все его зависимости
+    dir: deploy/compose/inventory
+    cmds:
+      - echo "[task] Поднимаем Inventory с зависимостями"
+      - docker compose --env-file ../../../inventory.env up --build --detach
+
+  down-inventory:
+    desc: Остановить и удалить Inventory сервис и все его зависимости
+    dir: deploy/compose/inventory
+    cmds:
+      - echo "[task] Останавливаем Inventory с зависимостями"
+      - docker compose --env-file ../../../inventory.env down --volumes
+
+  up-iam:
+    desc: "Поднять IAM сервис и все его зависимости (PostgreSQL + Redis)"
+    dir: deploy/compose/iam
+    cmds:
+      - echo "[task] Поднимаем IAM с зависимостями (PostgreSQL + Redis)"
+      - docker compose --env-file ../../../iam.env up --build --detach
+
+  down-iam:
+    desc: "Остановить и удалить IAM сервис и все его зависимости"
+    dir: deploy/compose/iam
+    cmds:
+      - echo "[task] Останавливаем IAM с зависимостями"
+      - docker compose --env-file ../../../iam.env down --volumes
+
+  up-all:
+    desc: "Поднять инфраструктуру + все сервисы (3 инстанса OrderService за Nginx)"
+    cmds:
+      - task: up-core
+      - >-
+        docker compose
+        --env-file core.env
+        -f deploy/compose/services/docker-compose.yml
+        up -d --build --scale order-service=3
+
+  down-all:
+    desc: "Остановить и удалить все сервисы и инфраструктуру"
+    cmds:
+      - >-
+        docker compose
+        -f deploy/compose/services/docker-compose.yml
+        down
+      - task: down-core
+
+  load:http:
+    desc: "Нагрузочный тест HTTP: POST с нарастающей нагрузкой (50 → 500 RPS за 2.5 мин)"
+    deps: [vegeta:install]
+    cmds:
+      - |
+        VEGETA="{{.VEGETA}}"
+        RESULTS_DIR=$(mktemp -d)
+        BODY_FILE="$RESULTS_DIR/body.json"
+        echo '{"hull_uuid":"test-hull","engine_uuid":"test-engine"}' > "$BODY_FILE"
+        trap 'rm -rf "$RESULTS_DIR"' EXIT
+
+        for rate in 50 100 150 200 250 300 350 400 450 500; do
+          echo "⏱️  ступень: ${rate} RPS (15 сек)"
+          echo "POST http://localhost:8080/api/v1/orders" | \
+            $VEGETA attack -rate="${rate}/s" -duration=15s \
+              -body="$BODY_FILE" -header="Content-Type: application/json" | \
+            $VEGETA encode --to json >> "$RESULTS_DIR/results.json"
+        done
+
+        $VEGETA report -type=json < "$RESULTS_DIR/results.json"
+
+  migrate:order:up:
+    desc: "Применяет все миграции Order-сервиса"
+    deps: [goose:install]
+    dotenv: ['order.env']
+    cmds:
+      - '{{.GOOSE}} -dir $MIGRATIONS_DIR postgres "$DB_URI" up'
+
+  migrate:order:down:
+    desc: "Откатывает последнюю миграцию Order-сервиса"
+    deps: [goose:install]
+    dotenv: ['order.env']
+    cmds:
+      - '{{.GOOSE}} -dir $MIGRATIONS_DIR postgres "$DB_URI" down'
+
+  migrate:order:status:
+    desc: "Показывает статус миграций Order-сервиса"
+    deps: [goose:install]
+    dotenv: ['order.env']
+    cmds:
+      - '{{.GOOSE}} -dir $MIGRATIONS_DIR postgres "$DB_URI" status'
+
+  migrate:inventory:up:
+    desc: "Применяет все миграции Inventory-сервиса"
+    deps: [goose:install]
+    dotenv: ['inventory.env']
+    cmds:
+      - '{{.GOOSE}} -dir $MIGRATIONS_DIR postgres "$DB_URI" up'
+
+  migrate:inventory:down:
+    desc: "Откатывает последнюю миграцию Inventory-сервиса"
+    deps: [goose:install]
+    dotenv: ['inventory.env']
+    cmds:
+      - '{{.GOOSE}} -dir $MIGRATIONS_DIR postgres "$DB_URI" down'
+
+  migrate:inventory:status:
+    desc: "Показывает статус миграций Inventory-сервиса"
+    deps: [goose:install]
+    dotenv: ['inventory.env']
+    cmds:
+      - '{{.GOOSE}} -dir $MIGRATIONS_DIR postgres "$DB_URI" status'
+
+  migrate:iam:up:
+    desc: "Применяет все миграции IAM-сервиса"
+    deps: [goose:install]
+    dotenv: ['iam.env']
+    cmds:
+      - '{{.GOOSE}} -dir $MIGRATIONS_DIR postgres "$DB_URI" up'
+
+  migrate:iam:down:
+    desc: "Откатывает последнюю миграцию IAM-сервиса"
+    deps: [goose:install]
+    dotenv: ['iam.env']
+    cmds:
+      - '{{.GOOSE}} -dir $MIGRATIONS_DIR postgres "$DB_URI" down'
+
+  migrate:iam:status:
+    desc: "Показывает статус миграций IAM-сервиса"
+    deps: [goose:install]
+    dotenv: ['iam.env']
+    cmds:
+      - '{{.GOOSE}} -dir $MIGRATIONS_DIR postgres "$DB_URI" status'
+
+  run:iam:
+    desc: "Запускает IAMService (gRPC :50053)"
+    dir: iam
+    cmds:
+      - go run ./cmd
+
+  run:inventory:
+    desc: "Запускает InventoryService (gRPC :50051)"
+    dir: inventory
+    cmds:
+      - go run ./cmd
+
+  run:payment:
+    desc: "Запускает PaymentService (gRPC :50052)"
+    dir: payment
+    cmds:
+      - go run ./cmd
+
+  run:order:
+    desc: "Запускает OrderService (HTTP :8080)"
+    dir: order
+    cmds:
+      - go run ./cmd
+
+  run:assembly:
+    desc: "Запускает AssemblyService (Kafka consumer)"
+    dir: assembly
+    cmds:
+      - go run ./cmd
+
+  test:
+    desc: "Запускает юнит-тесты всех модулей"
+    cmds:
+      - go test ./assembly/... ./iam/... ./inventory/... ./order/... ./payment/...
