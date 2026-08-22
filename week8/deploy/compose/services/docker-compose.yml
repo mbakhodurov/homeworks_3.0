@@ -50,6 +50,7 @@ services:
         ALPINE_IMAGE: ${ALPINE_IMAGE}
     ports:
       - "50051:50051"
+      - "8083:8083"
     volumes:
       - ../../../inventory/config.docker.yaml:/config.yaml
     environment:
@@ -66,6 +67,7 @@ services:
         ALPINE_IMAGE: ${ALPINE_IMAGE}
     ports:
       - "50052:50052"
+      - "8082:8082"
     volumes:
       - ../../../payment/config.docker.yaml:/config.yaml
     environment:
